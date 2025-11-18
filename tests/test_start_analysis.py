@@ -22,8 +22,10 @@ def test_start_analysis_creates_directory():
     expected_dir = Path(f"analysis/hypothesis-testing/{today}-test-analysis")
     assert expected_dir.exists()
 
-    # Verify template was copied
-    assert (expected_dir / ".gitkeep").exists()  # Will be replaced with actual template files later
+    # Verify template files were copied
+    assert (expected_dir / "README.md").exists()
+    assert (expected_dir / "00 - overview.md").exists()
+    assert (expected_dir / ".query-template.md").exists()
 
 def test_start_analysis_prevents_duplicates():
     """Test that start-analysis handles existing directories"""
