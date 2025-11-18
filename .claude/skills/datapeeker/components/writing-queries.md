@@ -263,7 +263,8 @@ WITH daily_sales AS (
 daily_stats AS (
   SELECT
     AVG(revenue) as avg_daily_revenue,
-    STDEV(revenue) as stddev_revenue
+    -- SQLite doesn't have STDEV() - calculate manually using variance formula
+    SQRT(AVG(revenue * revenue) - AVG(revenue) * AVG(revenue)) as stddev_revenue
   FROM daily_sales
 )
 SELECT
@@ -626,18 +627,27 @@ ORDER BY total_revenue DESC
 LIMIT 10;
 
 -- Top 20% of customers (by revenue)
+-- NOTE: PERCENT_RANK() requires SQLite 3.28+
 WITH customer_revenue AS (
   SELECT
     customer_id,
     SUM(amount) as total_revenue
   FROM orders
   GROUP BY customer_id
+),
+ranked_customers AS (
+  SELECT
+    customer_id,
+    total_revenue,
+    PERCENT_RANK() OVER (ORDER BY total_revenue DESC) as percentile_rank
+  FROM customer_revenue
 )
+-- Must use CTE to filter on window function results
 SELECT
   customer_id,
   total_revenue,
-  PERCENT_RANK() OVER (ORDER BY total_revenue DESC) as percentile_rank
-FROM customer_revenue
+  percentile_rank
+FROM ranked_customers
 WHERE percentile_rank <= 0.20
 ORDER BY total_revenue DESC;
 
