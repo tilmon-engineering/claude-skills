@@ -76,3 +76,44 @@ def test_import_handles_multiple_csvs():
         test_csv1.unlink()
     if test_csv2.exists():
         test_csv2.unlink()
+
+def test_import_preserves_data_values():
+    """Test that numeric and text data values are preserved correctly"""
+    # Setup: create CSV with various data types
+    test_csv = Path("data/test_data_types.csv")
+    test_csv.write_text("product,price,quantity,description\nWidget,99.99,5,Premium widget\nGadget,149.50,3,Deluxe gadget")
+
+    # Execute import
+    subprocess.run(["just", "import-csvs"])
+
+    # Verify data values are preserved correctly
+    conn = sqlite3.connect("data/analytics.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT product, price, quantity, description FROM test_data_types WHERE product='Widget'")
+    row = cursor.fetchone()
+    assert row is not None, "Widget row should exist"
+    assert row[0] == "Widget", "Product name should be preserved"
+    assert row[1] == "99.99", "Price should be preserved as 99.99"
+    assert row[2] == "5", "Quantity should be preserved"
+    assert row[3] == "Premium widget", "Description should be preserved"
+
+    conn.close()
+
+    # Cleanup
+    if test_csv.exists():
+        test_csv.unlink()
+
+def test_import_with_no_csvs():
+    """Test that import handles empty CSV directory gracefully"""
+    # Setup: ensure no test CSV files exist
+    data_dir = Path("data")
+    test_csvs = list(data_dir.glob("test_*.csv"))
+    for csv in test_csvs:
+        csv.unlink()
+
+    # Execute import (should complete without error even with no CSVs)
+    result = subprocess.run(["just", "import-csvs"], capture_output=True, text=True)
+
+    # Verify it completes successfully
+    assert result.returncode == 0, "Import should succeed even with no CSV files"
