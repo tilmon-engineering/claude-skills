@@ -17,3 +17,14 @@ def test_template_has_metadata():
     content = metadata.read_text()
     assert "# Analysis Overview" in content
     assert "## Analytical Goal" in content
+
+def test_template_has_query_template():
+    """Test that template includes query template helper"""
+    query_template = Path("analysis/_template/.query-template.md")
+    assert query_template.exists()
+
+    content = query_template.read_text()
+    assert "## Rationale" in content
+    assert "## Query" in content
+    assert "## Results" in content
+    assert "## Interpretation" in content
