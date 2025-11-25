@@ -1,6 +1,6 @@
 ---
 name: importing-data
-description: Systematic CSV import process - discover structure, design schema, standardize formats, import to SQLite, detect quality issues (component skill for DataPeeker analysis sessions)
+description: Systematic CSV import process - discover structure, design schema, standardize formats, import to database, detect quality issues (component skill for DataPeeker analysis sessions)
 ---
 
 # Importing Data - Component Skill
@@ -9,17 +9,19 @@ description: Systematic CSV import process - discover structure, design schema, 
 
 Use this skill when:
 - Starting a new analysis with CSV data files
-- Need to import CSV into SQLite database systematically
+- Need to import CSV into relational database systematically
 - Want to ensure proper schema design and type inference
 - Need quality assessment before cleaning/analysis begins
-- Replacing ad-hoc "just import-csvs" workflow
+- Replacing ad-hoc import workflows
 
 This skill is a **prerequisite** for all DataPeeker analysis workflows and is referenced by all process skills.
+
+**Note:** DataPeeker uses SQLite (`data/analytics.db`), but this process applies to any SQL database. For SQLite-specific commands, see the `using-sqlite` skill.
 
 ## Prerequisites
 
 - **CSV file accessible** on local filesystem
-- **SQLite database** at `data/analytics.db` (or path specified by project)
+- **Database** with SQL support (DataPeeker uses SQLite at `data/analytics.db`)
 - **Workspace created** for analysis session (via `just start-analysis` or equivalent)
 - **Understanding** that this skill creates `raw_*` tables, not final tables (cleaning-data handles finalization)
 
@@ -123,36 +125,40 @@ Create `analysis/[session-name]/01-csv-profile.md` with: ./templates/phase-1.md
 
 ## Phase 2: Schema Design & Type Inference
 
-**Goal:** Design SQLite schema by inferring types from CSV samples, propose table structure with rationale.
+**Goal:** Design database schema by inferring types from CSV samples, propose table structure with rationale.
 
 ### Analyze Column Types
 
-For each column from Phase 1 profiling, infer SQLite type:
+For each column from Phase 1 profiling, infer appropriate data type:
 
-**SQLite Type Inference Rules:**
+**Type Inference Rules** (adapt to your database):
 
-1. **INTEGER** - Use when:
+1. **Integer types** - Use when:
    - All non-NULL values are whole numbers
    - No decimal points observed
    - Typical for: IDs, counts, years, quantities
+   - Examples: INTEGER (SQLite), INT/BIGINT (PostgreSQL/MySQL)
 
-2. **REAL** - Use when:
+2. **Decimal/Float types** - Use when:
    - Values contain decimal points
    - Monetary amounts, measurements, percentages
-   - Example: 19.99, 0.05, 123.45
+   - Examples: REAL (SQLite), NUMERIC/DECIMAL (PostgreSQL), DECIMAL (MySQL)
 
-3. **TEXT** - Use when:
+3. **Text/String types** - Use when:
    - Mixed alphanumeric content
-   - Dates/datetimes (store as ISO 8601: YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)
+   - Dates/datetimes stored as text (ISO 8601: YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)
    - Categories, names, descriptions
+   - Examples: TEXT (SQLite), VARCHAR/TEXT (PostgreSQL/MySQL)
    - **Default choice when unsure**
+
+**Note:** Date/time handling varies by database. SQLite stores dates as TEXT. PostgreSQL/MySQL have native DATE/TIMESTAMP types.
 
 **Document:** For each column, record inferred type with rationale and sample values.
 
 ### Handle NULL Representations
 
 Identify NULL representations in CSV:
-- Empty cells → `NULL` in SQLite
+- Empty cells → `NULL` in database
 - Literal strings: "N/A", "null", "NULL", "None", "#N/A" → Convert to `NULL`
 - Numeric codes: -999, -1 (if documented as NULL) → Convert to `NULL`
 

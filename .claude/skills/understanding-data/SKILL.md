@@ -15,8 +15,8 @@ This component skill guides systematic data profiling before analysis begins. Us
 
 ## Prerequisites
 
-- CSV files imported to `data/analytics.db`
-- SQLite CLI or similar tool available
+- CSV files imported to database (relational database with SQL support)
+- SQL query tool available (database CLI, IDE, or query interface)
 - Analysis workspace created via `just start-analysis`
 
 ## Data Understanding Process
@@ -41,14 +41,21 @@ Mark each phase as you complete it. Document all findings in a numbered markdown
 ### List All Tables
 
 ```sql
--- Get all tables in database
-SELECT name
-FROM sqlite_master
-WHERE type='table'
-ORDER BY name;
+-- Get all tables in database (method varies by database)
+-- SQLite: SELECT name FROM sqlite_master WHERE type='table'
+-- PostgreSQL/MySQL/SQL Server: SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'
+-- Or use database-specific tools: .tables (SQLite), \dt (PostgreSQL), SHOW TABLES (MySQL)
+
+-- Portable approach using INFORMATION_SCHEMA (not supported in SQLite):
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'your_schema'
+ORDER BY table_name;
 ```
 
 **Document:** Table names and their likely business meaning.
+
+**Note:** For SQLite-specific commands, use the `using-sqlite` skill.
 
 ### Examine Table Schemas
 
@@ -199,8 +206,12 @@ For any table with dates/timestamps:
 
 ```sql
 -- Group by time period to see distribution
+-- Extract year-month (use database-specific function)
+-- SQLite: strftime('%Y-%m', date_column)
+-- PostgreSQL: TO_CHAR(date_column, 'YYYY-MM')
+-- MySQL: DATE_FORMAT(date_column, '%Y-%m')
 SELECT
-  strftime('%Y-%m', date_column) as year_month,
+  [year_month_function] as year_month,
   COUNT(*) as row_count
 FROM table_name
 GROUP BY year_month

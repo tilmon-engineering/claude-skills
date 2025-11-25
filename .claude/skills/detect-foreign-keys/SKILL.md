@@ -7,7 +7,7 @@ description: Identify foreign key relationships between tables using heuristics,
 
 ## Purpose
 
-This component skill guides systematic foreign key relationship detection in SQLite databases. Use it when:
+This component skill guides systematic foreign key relationship detection in relational databases. Use it when:
 - Multiple tables exist in the database and relationships are undocumented
 - Need to understand table relationships before joining data
 - Validating referential integrity between tables
@@ -16,8 +16,8 @@ This component skill guides systematic foreign key relationship detection in SQL
 
 ## Prerequisites
 
-- Tables exist in `data/analytics.db`
-- SQLite CLI available
+- Tables exist in database (relational database with SQL support)
+- SQL query tool available (database CLI, IDE, or query interface)
 - Table schemas have been examined (Phase 1 of understanding-data)
 - Analysis workspace created
 

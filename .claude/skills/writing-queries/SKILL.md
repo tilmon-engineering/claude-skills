@@ -15,8 +15,8 @@ This component skill guides systematic query development for analytics. Use it w
 
 ## Prerequisites
 
-- CSV files imported to `data/analytics.db`
-- SQLite CLI or similar tool available
+- CSV files imported to database (relational database with SQL support)
+- SQL query tool available (database CLI, IDE, or query interface)
 - Understanding of table schema (use `understanding-data` skill if needed)
 - Clear analytical question to answer
 
@@ -188,8 +188,8 @@ Document potential issues:
 3. **Duplicate records:** Could there be duplicate transactions?
    - Decision: Check with COUNT(*) vs COUNT(DISTINCT order_id)
 
-4. **Date formatting:** Are dates stored as TEXT or DATE type?
-   - Decision: Use STRFTIME if TEXT, verify format is consistent
+4. **Date formatting:** Are dates stored as strings or native DATE type?
+   - Decision: Use database date functions to extract components, verify format is consistent
 ```
 
 ---
@@ -218,14 +218,18 @@ ORDER BY total DESC;
 ```sql
 -- Calculate daily sales metrics for Q1 2024
 SELECT
-  DATE(order_date) as sale_date,
+  -- Extract date component (function varies by database)
+  -- SQLite: DATE(order_date)
+  -- PostgreSQL: order_date::date or DATE(order_date)
+  -- MySQL: DATE(order_date)
+  CAST(order_date AS DATE) as sale_date,
   COUNT(*) as transaction_count,  -- Total orders per day
   SUM(amount) as total_revenue,   -- Gross revenue before returns
   ROUND(AVG(amount), 2) as avg_order_value
 FROM orders
 WHERE order_date BETWEEN '2024-01-01' AND '2024-03-31'
   AND status = 'completed'  -- Exclude cancelled/pending
-GROUP BY DATE(order_date)
+GROUP BY CAST(order_date AS DATE)
 ORDER BY sale_date;
 ```
 
@@ -385,7 +389,7 @@ Pick a specific row from results and verify manually:
 
 ```sql
 -- Example: Verify March 15 sales total
-SELECT SUM(amount) FROM orders WHERE DATE(order_date) = '2024-03-15';
+SELECT SUM(amount) FROM orders WHERE CAST(order_date AS DATE) = '2024-03-15';
 ```
 
 Compare to what your main query shows for March 15.
@@ -450,17 +454,19 @@ GROUP BY category, product;
 ```sql
 -- Symptom: Date groupings don't match expectations
 -- Cause: Date format inconsistency or wrong extraction
--- Fix: Verify date format and use appropriate function
+-- Fix: Verify date format and use appropriate database function
 
 -- Check date format first
 SELECT DISTINCT date_column FROM table LIMIT 10;
 
--- Use STRFTIME for TEXT dates in ISO format
-SELECT STRFTIME('%Y-%m', date_column) as year_month
-FROM table;
+-- Extract date components using database-specific functions
+-- Postgres: TO_CHAR, DATE_TRUNC, EXTRACT
+-- MySQL: DATE_FORMAT, YEAR, MONTH
+-- SQLite: STRFTIME, DATE
+-- See database documentation for specific syntax
 
--- Use DATE for DATE types
-SELECT DATE(date_column) FROM table;
+-- Generic approach: Cast to DATE type
+SELECT CAST(date_column AS DATE) FROM table;
 ```
 
 ---
@@ -554,18 +560,22 @@ Clothing         | 3456        | 234567.80     | 67.89
 ```sql
 -- Daily trend
 SELECT
-  DATE(order_date) as date,
+  CAST(order_date AS DATE) as date,
   COUNT(*) as order_count,
   SUM(amount) as revenue,
   ROUND(AVG(amount), 2) as avg_order_value
 FROM orders
 WHERE order_date BETWEEN '2024-01-01' AND '2024-03-31'
-GROUP BY DATE(order_date)
+GROUP BY CAST(order_date AS DATE)
 ORDER BY date;
 
--- Weekly trend (week starting Monday)
+-- Weekly trend (implementation varies by database)
+-- Postgres: DATE_TRUNC('week', order_date)
+-- MySQL: DATE_SUB(order_date, INTERVAL WEEKDAY(order_date) DAY)
+-- SQLite: DATE(order_date, 'weekday 0', '-6 days')
 SELECT
-  DATE(order_date, 'weekday 0', '-6 days') as week_start,
+  -- Use database-specific function to get week start date
+  [week_start_function] as week_start,
   COUNT(*) as order_count,
   SUM(amount) as revenue
 FROM orders
@@ -573,9 +583,13 @@ WHERE order_date BETWEEN '2024-01-01' AND '2024-03-31'
 GROUP BY week_start
 ORDER BY week_start;
 
--- Monthly trend
+-- Monthly trend (implementation varies by database)
+-- Postgres: TO_CHAR(order_date, 'YYYY-MM')
+-- MySQL: DATE_FORMAT(order_date, '%Y-%m')
+-- SQLite: STRFTIME('%Y-%m', order_date)
 SELECT
-  STRFTIME('%Y-%m', order_date) as year_month,
+  -- Use database-specific function to extract year-month
+  [year_month_function] as year_month,
   COUNT(*) as order_count,
   SUM(amount) as revenue
 FROM orders
@@ -675,7 +689,8 @@ ORDER BY category, rank;
 -- Month-over-month comparison
 WITH monthly_sales AS (
   SELECT
-    STRFTIME('%Y-%m', order_date) as year_month,
+    -- Extract year-month (use database-specific function)
+    [year_month_function] as year_month,
     SUM(amount) as revenue
   FROM orders
   GROUP BY year_month
@@ -691,14 +706,15 @@ FROM monthly_sales
 ORDER BY year_month;
 
 -- Year-over-year comparison
+-- Extract month and year components (use database-specific functions)
 SELECT
-  STRFTIME('%m', order_date) as month,
-  SUM(CASE WHEN STRFTIME('%Y', order_date) = '2023' THEN amount ELSE 0 END) as revenue_2023,
-  SUM(CASE WHEN STRFTIME('%Y', order_date) = '2024' THEN amount ELSE 0 END) as revenue_2024,
-  SUM(CASE WHEN STRFTIME('%Y', order_date) = '2024' THEN amount ELSE 0 END) -
-  SUM(CASE WHEN STRFTIME('%Y', order_date) = '2023' THEN amount ELSE 0 END) as yoy_change
+  [month_function] as month,
+  SUM(CASE WHEN [year_function] = '2023' THEN amount ELSE 0 END) as revenue_2023,
+  SUM(CASE WHEN [year_function] = '2024' THEN amount ELSE 0 END) as revenue_2024,
+  SUM(CASE WHEN [year_function] = '2024' THEN amount ELSE 0 END) -
+  SUM(CASE WHEN [year_function] = '2023' THEN amount ELSE 0 END) as yoy_change
 FROM orders
-WHERE STRFTIME('%Y', order_date) IN ('2023', '2024')
+WHERE [year_function] IN ('2023', '2024')
 GROUP BY month
 ORDER BY month;
 ```
@@ -712,7 +728,8 @@ ORDER BY month;
 WITH first_purchase AS (
   SELECT
     customer_id,
-    STRFTIME('%Y-%m', MIN(order_date)) as cohort_month
+    -- Extract year-month from first purchase (use database-specific function)
+    [year_month_function(MIN(order_date))] as cohort_month
   FROM orders
   GROUP BY customer_id
 )
@@ -775,96 +792,14 @@ WHERE row_num = CAST(total_count * 0.75 AS INTEGER);
 
 ---
 
-## SQLite-Specific Considerations
+## Database-Specific Implementation
 
-### Date/Time Functions
+This skill provides database-agnostic query guidance. For database-specific syntax:
 
-SQLite stores dates as TEXT, REAL, or INTEGER. Most CSVs import as TEXT.
+- **SQLite**: Use the `using-sqlite` skill for SQLite-specific date functions (STRFTIME), CLI invocation patterns, and SQLite idioms
+- **PostgreSQL, MySQL, etc.**: Consult database documentation for date/time functions, string operations, and window function syntax
 
-```sql
--- Extract components from ISO date (YYYY-MM-DD)
-SELECT
-  order_date,
-  STRFTIME('%Y', order_date) as year,
-  STRFTIME('%m', order_date) as month,
-  STRFTIME('%d', order_date) as day,
-  STRFTIME('%w', order_date) as day_of_week,  -- 0=Sunday
-  STRFTIME('%W', order_date) as week_number
-FROM orders;
-
--- Date arithmetic
-SELECT
-  order_date,
-  DATE(order_date, '+7 days') as one_week_later,
-  DATE(order_date, '-1 month') as one_month_earlier,
-  JULIANDAY('2024-03-31') - JULIANDAY(order_date) as days_until_end_of_q1
-FROM orders;
-
--- Date formatting
-SELECT STRFTIME('%Y-%m-%d %H:%M:%S', 'now') as current_timestamp;
-```
-
-### String Functions
-
-```sql
--- Case conversion
-SELECT UPPER(product_name), LOWER(category) FROM products;
-
--- Trimming whitespace
-SELECT TRIM(customer_name) FROM customers;
-
--- Substring extraction
-SELECT SUBSTR(product_code, 1, 3) as category_code FROM products;
-
--- Pattern matching
-SELECT * FROM products WHERE product_name LIKE '%shirt%';
-```
-
-### Type Conversion
-
-```sql
--- Convert text to number
-SELECT CAST(text_column AS INTEGER) FROM table;
-
--- Handle conversion errors with CASE
-SELECT
-  CASE
-    WHEN text_column GLOB '[0-9]*' THEN CAST(text_column AS INTEGER)
-    ELSE 0
-  END as numeric_value
-FROM table;
-```
-
-### Window Functions
-
-SQLite supports window functions for advanced analytics:
-
-```sql
--- Running total
-SELECT
-  order_date,
-  amount,
-  SUM(amount) OVER (ORDER BY order_date) as running_total
-FROM orders;
-
--- Moving average (7-day)
-SELECT
-  order_date,
-  amount,
-  AVG(amount) OVER (
-    ORDER BY order_date
-    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-  ) as moving_avg_7day
-FROM orders;
-
--- Rank within partition
-SELECT
-  category,
-  product_name,
-  revenue,
-  RANK() OVER (PARTITION BY category ORDER BY revenue DESC) as rank_in_category
-FROM product_sales;
-```
+**Core SQL patterns** (SELECT, JOIN, GROUP BY, CTEs, window functions) are consistent across databases. **Function syntax** (date extraction, string manipulation) varies by database.
 
 ---
 
