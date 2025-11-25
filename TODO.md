@@ -1,0 +1,3 @@
+- [ ] importing-data skill
+- [ ] cleaning-data skill
+- [ ] classifying-text skill
