@@ -59,38 +59,7 @@ Update status as you progress. Mark phases complete ONLY after checkpoint verifi
    - What would constitute evidence for/against this belief?
    - What's the practical significance threshold?
 
-2. **Write hypotheses in `01 - hypothesis-formulation.md`**
-
-```markdown
-# Hypothesis Formulation
-
-## Analytical Goal
-[User's question in plain language]
-
-## Context
-[Why this matters, business/research context]
-
-## Hypotheses
-
-### Null Hypothesis (H0)
-[Precise statement of "no effect" or baseline assumption]
-
-Example: "Day of week has no effect on sales volume - all days have equal expected sales"
-
-### Alternative Hypothesis (H1)
-[What you're looking for evidence of]
-
-Example: "Day of week affects sales volume - some days have significantly higher/lower sales than others"
-
-## Success Criteria
-[What would make you reject H0? What magnitude of difference matters practically?]
-
-## Potential Confounds
-[What other factors might explain differences? List now, before seeing data]
-- Factor 1: [e.g., seasonality, holidays]
-- Factor 2: [e.g., promotions, store closures]
-- Factor 3: [e.g., weather, local events]
-```
+2. **Write hypotheses in `01 - hypothesis-formulation.md`** with: ./templates/phase-1.md
 
 3. **STOP and get user confirmation**
    - Read the hypotheses back to the user
@@ -113,54 +82,7 @@ Example: "Day of week affects sales volume - some days have significantly higher
 
 ### Instructions
 
-1. **Design your test in `02 - test-design.md`** WITHOUT looking at actual data values
-
-```markdown
-# Test Design
-
-## Metrics
-
-### Primary Metric
-[What you'll measure - be specific about calculation]
-
-Example: "Average daily sales amount, calculated as SUM(amount) grouped by day_of_week"
-
-### Supporting Metrics
-- [Additional metrics that provide context]
-- [Sample sizes, variance measures, etc.]
-
-## Comparison Structure
-
-[How you'll compare groups/periods]
-
-Example: "Compare average sales across all 7 days of the week"
-
-## Data Requirements
-
-### Required Tables/Columns
-- Table: `sales`
-  - `date` or `transaction_date` (date column)
-  - `amount` or `total` (numeric sales value)
-  - [Any other required columns]
-
-### Data Quality Checks
-1. **Missing values:** Check for NULL dates or amounts
-2. **Date range:** Verify we have complete weeks (not partial data)
-3. **Sample size:** Ensure adequate transactions per day-of-week
-4. **Outliers:** Identify and decide how to handle extreme values
-
-### Queries Needed (design, don't execute yet)
-1. Schema check: Verify table structure
-2. Data quality: Check for NULLs, ranges, counts
-3. Main analysis: Calculate metric by segment
-4. Supporting analysis: Calculate sample sizes, variance
-
-## Statistical Considerations
-
-[How you'll assess significance - note: we can't do formal statistical tests, but we can assess practical significance]
-
-Example: "Look for differences >20% from average, check if driven by small sample sizes"
-```
+1. **Design your test in `02 - test-design.md`** with: ./templates/phase-2.md
 
 2. **STOP and verify test design**
    - Does this test actually answer the hypothesis?
@@ -192,47 +114,7 @@ Create separate numbered files:
 - `05 - main-analysis.md`
 - `06 - supporting-analysis.md` (if needed)
 
-2. **For each query file, use this structure:**
-
-```markdown
-# [Query Purpose]
-
-## Rationale
-[Why this query is needed for the hypothesis test]
-
-## Query
-```sql
--- [Clear SQL with comments]
-SELECT
-  STRFTIME('%w', date_column) as day_of_week,  -- 0=Sunday, 6=Saturday
-  COUNT(*) as transaction_count,
-  SUM(amount) as total_sales,
-  AVG(amount) as avg_sale,
-  MIN(amount) as min_sale,
-  MAX(amount) as max_sale
-FROM sales
-WHERE date_column IS NOT NULL
-  AND amount IS NOT NULL
-GROUP BY day_of_week
-ORDER BY day_of_week;
-```
-
-## Results
-[Paste actual query results here - raw output]
-
-```
-day_of_week | transaction_count | total_sales | avg_sale | min_sale | max_sale
-0           | 1250              | 45890.50    | 36.71    | 5.00     | 299.99
-1           | 2140              | 98234.20    | 45.90    | 5.00     | 450.00
-...
-```
-
-## Initial Observations
-[What do you see? NO INTERPRETATION YET, just facts]
-- Day 0 (Sunday): 1,250 transactions, $36.71 average
-- Day 1 (Monday): 2,140 transactions, $45.90 average
-- [etc.]
-```
+2. **For each query file, use this structure:** ./templates/phase-3-query.md
 
 3. **Execute queries using appropriate tool**
    - Use SQLite CLI or database tool
@@ -264,73 +146,7 @@ day_of_week | transaction_count | total_sales | avg_sale | min_sale | max_sale
 
 ### Instructions
 
-1. **Create interpretation file: `XX - interpretation.md`**
-
-```markdown
-# Result Interpretation
-
-## Summary of Findings
-
-### Primary Metric Results
-[Describe what the analysis showed - facts first]
-
-Example: "Sales vary significantly by day of week:
-- Sunday: $36.71 avg (lowest)
-- Wednesday: $52.30 avg (highest)
-- Range: $15.59 (42% difference from Sunday to Wednesday)"
-
-### Statistical Assessment
-[Without formal tests, assess practical significance]
-
-- Magnitude: [How big are the differences?]
-- Consistency: [Do sample sizes support the pattern?]
-- Practical importance: [Do differences matter for decisions?]
-
-## Alternative Explanations
-
-[Consider other factors that might explain the pattern]
-
-1. **[Confound 1]:** [How it might explain results, can we rule it out?]
-   - Evidence for/against: [What data suggests this is/isn't the explanation?]
-
-2. **[Confound 2]:** [How it might explain results]
-   - Evidence for/against: [...]
-
-Example:
-1. **Promotions:** Maybe Wednesday has more promotions
-   - Evidence: Would need promotion data to check (not available in current dataset)
-   - Impact: Could fully explain the pattern
-
-2. **Store hours:** Maybe stores open later/close earlier on Sundays
-   - Evidence: Transaction counts are lower (1,250 vs 2,140), supporting this
-   - Impact: Might partially explain lower sales
-
-## Hypothesis Test Result
-
-### Null Hypothesis (H0)
-[Restate from Phase 1]
-
-### Decision
-**[REJECT H0 / FAIL TO REJECT H0]**
-
-### Rationale
-[Why did you make this decision? What evidence was most compelling?]
-
-Example: "REJECT H0. The 42% difference between Sunday and Wednesday average sales is both statistically meaningful (based on large sample sizes) and practically significant. However, this rejection comes with caveats (see limitations)."
-
-## Limitations
-
-[What reduces confidence in conclusions?]
-
-1. [Data limitation]
-2. [Methodological limitation]
-3. [Confounding factor not addressed]
-
-Example:
-1. Cannot separate time-of-day effects from day-of-week effects
-2. Did not control for promotions or holidays
-3. Sample period may not be representative (need date range check)
-```
+1. **Create interpretation file: `XX - interpretation.md`** with: ./templates/phase-4.md
 
 2. **Be intellectually honest**
    - State limitations clearly
@@ -357,79 +173,11 @@ Example:
 
 ### Instructions
 
-1. **Create conclusion file: `XX - conclusion.md`**
-
-```markdown
-# Conclusion and Follow-up
-
-## Main Conclusion
-
-[1-2 sentences: What did you learn? What should reader take away?]
-
-Example: "Sales vary significantly by day of week, with Wednesday showing 42% higher average sales than Sunday. However, this pattern may be partially or fully explained by operational factors (store hours, staffing) rather than customer behavior differences."
-
-## Actionable Insights
-
-[What decisions or actions does this support? Be specific.]
-
-1. [Specific recommendation based on findings]
-2. [Alternative action if confounds are present]
-
-Example:
-1. IF pattern is driven by customer behavior: Consider promotions on low-traffic days (Sun, Mon)
-2. IF pattern is driven by store hours: Test extended hours on Sunday to see if sales increase proportionally
-
-## Follow-up Questions
-
-[What should be investigated next? Prioritize by importance.]
-
-1. **[Question 1]:** [Why this matters, what it would clarify]
-   - Data needed: [What data would answer this?]
-   - Approach: [How would you test this?]
-
-2. **[Question 2]:** [...]
-
-Example:
-1. **Are store hours consistent across days?** This would help separate operational from behavioral effects
-   - Data needed: Store hours by day, or transaction time stamps
-   - Approach: Analyze sales by hour-of-day, grouped by day-of-week
-
-2. **Do promotions correlate with high-sales days?** This would test the promotion confound
-   - Data needed: Promotion calendar with dates and products
-   - Approach: Join promotion data with sales, compare promoted vs non-promoted days
-
-3. **Is the pattern consistent across all stores/regions?** Tests generalizability
-   - Data needed: Store or region identifiers
-   - Approach: Repeat day-of-week analysis segmented by store
-
-## Confidence Level
-
-[How confident are you in the main conclusion?]
-
-- High confidence: Strong evidence, few confounds, adequate sample sizes
-- Medium confidence: Clear pattern but significant confounds not ruled out
-- Low confidence: Weak evidence, major limitations, small samples
-
-**This analysis: [CONFIDENCE LEVEL]** because [specific reasoning]
-```
+1. **Create conclusion file: `XX - conclusion.md`** with: ./templates/phase-5.md
 
 2. **Update overview file: `00 - overview.md`**
 
-Add summary section:
-
-```markdown
-## Results Summary
-
-**Hypothesis Test Result:** [REJECT H0 / FAIL TO REJECT H0]
-
-**Main Finding:** [One sentence]
-
-**Confidence:** [High/Medium/Low]
-
-**Key Limitation:** [Most important caveat]
-
-**Recommended Follow-up:** [Top priority next question]
-```
+Add summary section with: ./templates/overview-summary.md
 
 3. **Final checklist before marking complete**
    - [ ] All phases documented in numbered files

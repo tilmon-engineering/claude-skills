@@ -110,45 +110,7 @@ wc -l /path/to/file.csv
 
 ### Phase 1 Documentation Template
 
-Create `analysis/[session-name]/01-csv-profile.md` with:
-
-```markdown
-# CSV Profile: [filename]
-
-## File Information
-- **Source:** [absolute path to CSV]
-- **Size:** [file size in MB]
-- **Row count:** [total rows including header]
-- **Encoding:** [detected encoding]
-- **Delimiter:** [character]
-- **Headers:** [Yes/No - list if yes]
-
-## Sample Data
-
-### First 10 Rows
-```
-[paste head output]
-```
-
-### Last 10 Rows
-```
-[paste tail output]
-```
-
-## Column Overview
-
-[For each column detected in headers/first row:]
-### [Column Name or Position]
-- **Sample values (first 10):** [list unique values if reasonable]
-- **Observed types:** [text, numbers, dates, mixed]
-- **NULL indicators:** [empty cells, 'N/A', 'null', etc.]
-
-## Notes
-[Any observations about data quality, unusual patterns, concerns for import]
-
-## Next Steps
-Proceed to Phase 2: Schema Design & Type Inference
-```
+Create `analysis/[session-name]/01-csv-profile.md` with: ./templates/phase-1.md
 
 **CHECKPOINT:** Before proceeding to Phase 2, you MUST have:
 - [ ] CSV file path confirmed and file accessible
@@ -226,58 +188,7 @@ Use AskUserQuestion tool to present schema proposal:
 
 ### Phase 2 Documentation Template
 
-Create `analysis/[session-name]/02-schema-design.md`:
-
-```markdown
-# Schema Design: [dataset_name]
-
-## Objective
-Design SQLite schema for importing [CSV_filename] based on data profiling from Phase 1.
-
-## Column Type Analysis
-
-### [Column 1 Name]
-- **Sample values:** [examples from 01-csv-profile.md]
-- **Proposed type:** [INTEGER|REAL|TEXT]
-- **Rationale:** [Why this type - reference inference rules above]
-- **NULL handling:** [How NULL values will be handled]
-
-### [Column 2 Name]
-- **Sample values:** [examples]
-- **Proposed type:** [INTEGER|REAL|TEXT]
-- **Rationale:** [Explanation]
-- **NULL handling:** [Approach]
-
-[Continue for all columns...]
-
-## NULL Representation Mapping
-
-| CSV Representation | SQLite Value | Count in Sample |
-|--------------------|--------------|-----------------|
-| (empty cell)       | NULL         | [count]         |
-| "N/A"              | NULL         | [count]         |
-| [others]           | NULL         | [count]         |
-
-## Proposed Schema
-
-```sql
-CREATE TABLE raw_[table_name] (
-  [column_1] [TYPE],  -- [Rationale]
-  [column_2] [TYPE],  -- [Rationale]
-  ...
-);
-```
-
-## User Confirmation
-
-- **Proposed table name:** `raw_[name]`
-- **Total columns:** [count]
-- **User approval:** [Date/time of approval]
-- **Modifications requested:** [None / List of changes made]
-
-## Next Steps
-Proceed to Phase 3: Basic Standardization
-```
+Create `analysis/[session-name]/02-schema-design.md` with: ./templates/phase-2.md
 
 **CHECKPOINT:** Before proceeding to Phase 3, you MUST have:
 - [ ] All columns analyzed with type inference rationale
@@ -347,88 +258,7 @@ Apply NULL representation mapping from Phase 2:
 
 ### Phase 3 Documentation Template
 
-Create `analysis/[session-name]/03-standardization-rules.md`:
-
-```markdown
-# Standardization Rules: [dataset_name]
-
-## Objective
-Define transformation rules to standardize CSV data before import to raw_[table_name].
-
-## Date Standardization
-
-### [Date Column Name]
-- **Source format:** [e.g., "MM/DD/YYYY"]
-- **Target format:** YYYY-MM-DD (ISO 8601)
-- **Conversion logic:**
-  ```
-  Parse MM, DD, YYYY components
-  Reformat as YYYY-MM-DD
-  ```
-- **Verification query:**
-  ```sql
-  -- After import, verify all dates are ISO format
-  SELECT [column_name], COUNT(*) as count
-  FROM raw_[table_name]
-  WHERE [column_name] NOT GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
-    AND [column_name] IS NOT NULL;
-  ```
-
-[Repeat for each date column]
-
-## Number Normalization
-
-### [Numeric Column Name]
-- **Issues found:** [e.g., "Comma separators, dollar signs"]
-- **Normalization rules:**
-  - Remove: `$`, `,`
-  - Keep: `.` (decimal point)
-- **Example transformation:** `$1,234.56` → `1234.56`
-- **Verification query:**
-  ```sql
-  -- After import, verify all values are numeric
-  SELECT [column_name], COUNT(*) as count
-  FROM raw_[table_name]
-  WHERE CAST([column_name] AS REAL) IS NULL
-    AND [column_name] IS NOT NULL;
-  ```
-
-[Repeat for each numeric column]
-
-## Whitespace Standardization
-
-**Columns affected:** [List TEXT columns]
-**Rules:**
-- Trim leading/trailing whitespace
-- Collapse multiple internal spaces to single space
-- Normalize line endings to LF (`\n`)
-
-**Verification query:**
-```sql
--- Check for leading/trailing whitespace after import
-SELECT [column_name], COUNT(*) as count
-FROM raw_[table_name]
-WHERE [column_name] != TRIM([column_name])
-  AND [column_name] IS NOT NULL;
-```
-
-## NULL Standardization
-
-**Conversions applied:**
-
-| Original Value | Converted To | Affected Columns | Count |
-|----------------|--------------|------------------|-------|
-| (empty)        | NULL         | [All columns]    | [N]   |
-| "N/A"          | NULL         | [List]           | [N]   |
-| [Others]       | NULL         | [List]           | [N]   |
-
-## Implementation Notes
-
-[Any special cases, ambiguities resolved, user decisions made]
-
-## Next Steps
-Proceed to Phase 4: Import Execution
-```
+Create `analysis/[session-name]/03-standardization-rules.md` with: ./templates/phase-3.md
 
 **CHECKPOINT:** Before proceeding to Phase 4, you MUST have:
 - [ ] Date standardization rules defined for all date columns
@@ -562,118 +392,7 @@ Execute all verification queries defined in `03-standardization-rules.md`:
 
 ### Phase 4 Documentation Template
 
-Create `analysis/[session-name]/04-import-log.md`:
-
-```markdown
-# Import Log: [dataset_name]
-
-## Objective
-Execute import of [CSV_filename] to raw_[table_name] with standardization rules applied.
-
-## Table Creation
-
-```sql
-CREATE TABLE IF NOT EXISTS raw_[table_name] (
-  [full schema from Phase 2]
-);
-```
-
-**Execution result:** [Success / Error message]
-
-**Schema verification:**
-```
-[Paste PRAGMA table_info output]
-```
-
-## Import Execution
-
-**Method used:** [SQLite .import / Python script / Other]
-
-**Import command:**
-```bash
-[Exact command or script used]
-```
-
-**Import results:**
-- Start time: [timestamp]
-- End time: [timestamp]
-- Duration: [seconds]
-- Warnings: [Any warnings encountered]
-- Errors: [Any errors and how resolved]
-
-## Import Verification
-
-### Row Count Check
-```sql
-SELECT COUNT(*) as row_count FROM raw_[table_name];
-```
-
-**Result:** [N rows]
-**Expected (from CSV):** [N rows]
-**Status:** ✓ Match / ✗ Mismatch - [Explanation]
-
-### Sample Data
-```sql
-SELECT * FROM raw_[table_name] LIMIT 5;
-```
-
-**Results:**
-```
-[Paste first 5 rows]
-```
-
-### Column Completeness
-```sql
-SELECT
-  COUNT(*) as total_rows,
-  [column completeness query from above]
-FROM raw_[table_name];
-```
-
-**Results:**
-```
-[Paste counts]
-```
-
-## Standardization Verification
-
-### Date Format Check
-```sql
-[Verification query from 03-standardization-rules.md]
-```
-
-**Result:** [0 rows = success / N rows with issues]
-
-### Number Format Check
-```sql
-[Verification query from 03-standardization-rules.md]
-```
-
-**Result:** [0 rows = success / N rows with issues]
-
-### Whitespace Check
-```sql
-[Verification query from 03-standardization-rules.md]
-```
-
-**Result:** [0 rows = success / N rows with issues]
-
-## Issues Encountered
-
-[Document any issues found during verification and resolution approach]
-
-## Import Summary
-
-- **Status:** ✓ Success / ⚠ Success with caveats / ✗ Failed
-- **Table:** `raw_[table_name]`
-- **Rows imported:** [N]
-- **Columns:** [N]
-- **Standardization rules applied:** [Date/Number/Whitespace/NULL]
-- **Verification status:** [All checks passed / Issues documented above]
-
-## Next Steps
-Proceed to Phase 5: Quality Assessment & Reporting
-```
+Create `analysis/[session-name]/04-import-log.md` with: ./templates/phase-4.md
 
 **CHECKPOINT:** Before proceeding to Phase 5, you MUST have:
 - [ ] raw_* table created in data/analytics.db
@@ -710,105 +429,37 @@ The agent will execute all quality checks (NULL analysis, duplicates, outliers, 
 
 **Document agent findings in `05-quality-report.md` using template below.**
 
+### Delegate Foreign Key Detection to Sub-Agent
+
+**If multiple tables exist in the database**, detect foreign key relationships between them.
+
+**Use dedicated detect-foreign-keys agent**
+
+Invoke the `detect-foreign-keys` agent (defined in `.claude/agents/detect-foreign-keys.md`):
+
+```
+Task tool with agent: detect-foreign-keys
+Parameters:
+- database_path: data/analytics.db
+- table_names: [list of all raw_* tables in database]
+```
+
+**When to run FK detection:**
+- **Multiple tables imported:** Run to discover relationships
+- **Single table imported:** Skip (no relationships possible), document "N/A - single table" in quality report
+
+The agent will:
+1. Identify FK candidate columns based on naming patterns
+2. Validate candidates with value overlap analysis
+3. Assess cardinality (one-to-one, one-to-many, many-to-many)
+4. Quantify referential integrity violations (orphaned records)
+5. Return structured relationship catalog with join recommendations
+
+**Document FK findings in `05-quality-report.md` using template below.**
+
 ### Create Quality Report for cleaning-data
 
-Create `analysis/[session-name]/05-quality-report.md`:
-
-```markdown
-# Quality Assessment Report: [dataset_name]
-
-## Objective
-Systematically detect data quality issues in raw_[table_name] to inform cleaning-data skill.
-
-## Import Summary
-- **Source CSV:** [path to original CSV]
-- **Raw table:** raw_[table_name]
-- **Rows imported:** [count]
-- **Import date:** [timestamp from Phase 4]
-
-## Table Schema
-```
-[Paste PRAGMA table_info output from sub-agent]
-```
-
-## Data Completeness
-
-### NULL Analysis
-
-| Column | Non-NULL Count | NULL Count | NULL % |
-|--------|----------------|------------|--------|
-| [col1] | [count]        | [count]    | [%]    |
-| [col2] | [count]        | [count]    | [%]    |
-| ...    | ...            | ...        | ...    |
-
-**Columns with >10% NULLs (require attention):**
-- [column_name]: [%] NULL - [impact assessment]
-- [column_name]: [%] NULL - [impact assessment]
-
-## Duplicate Detection
-
-**Exact duplicates found:** [count] rows
-
-[If duplicates found:]
-```
-[Paste examples from sub-agent - first 5-10 duplicate groups]
-```
-
-**Assessment:** [Are these true duplicates or expected repeated values?]
-
-## Outlier Detection
-
-### [Numeric Column 1]
-- **Mean:** [value]
-- **MAD:** [value]
-- **Min:** [value]
-- **Max:** [value]
-- **Outliers (>3 MAD):** [count] rows
-
-[Repeat for each numeric column]
-
-**Columns with outliers requiring investigation:**
-- [column_name]: [count] outliers - [min/max values]
-- [column_name]: [count] outliers - [min/max values]
-
-## Free Text Candidates
-
-**Columns with high uniqueness (>50%):**
-
-| Column | Unique Values | Total Values | Uniqueness % | Categorization Priority |
-|--------|---------------|--------------|--------------|-------------------------|
-| [col]  | [count]       | [count]      | [%]          | [High/Medium/Low]       |
-
-**Recommended for categorization:**
-- [column_name]: [unique count] values - [brief description of content]
-
-## Additional Quality Concerns
-
-[List any other issues found by sub-agent:]
-- Type inconsistencies
-- Invalid values
-- Date range issues
-- Suspicious patterns
-
-## Summary of Findings
-
-**Critical issues (must address in cleaning-data):**
-1. [Issue description with severity]
-2. [Issue description with severity]
-
-**Non-critical issues (address if time permits):**
-1. [Issue description]
-2. [Issue description]
-
-## Recommended Actions for cleaning-data
-
-1. **Phase 2 (Issue Detection):** Deep-dive investigation of [specific issues]
-2. **Phase 3 (Strategy):** Decide approach for [duplicates/outliers/free text]
-3. **Phase 4 (Execution):** Apply transformations and create clean_* tables
-
-## Next Steps
-Proceed to cleaning-data skill with this quality report as input.
-```
+Create `analysis/[session-name]/05-quality-report.md` with: ./templates/phase-5.md
 
 **CHECKPOINT:** Before concluding importing-data skill, you MUST have:
 - [ ] Sub-agent completed quality assessment (NOT done in main context)
@@ -816,7 +467,9 @@ Proceed to cleaning-data skill with this quality report as input.
 - [ ] Duplicates detected and examples captured
 - [ ] Outliers identified in all numeric columns
 - [ ] Free text columns identified for categorization
-- [ ] `05-quality-report.md` created with all sections filled
+- [ ] FK relationships detected (if multiple tables) via detect-foreign-keys sub-agent
+- [ ] Referential integrity assessed with orphaned record counts
+- [ ] `05-quality-report.md` created with all sections filled (including FK relationships)
 - [ ] Quality report ready for cleaning-data skill to consume
 
 ---

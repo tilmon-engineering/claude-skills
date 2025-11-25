@@ -103,77 +103,13 @@ Evaluate each issue on three dimensions:
 
 ### Define Cleaning Scope and Objectives
 
-Create `analysis/[session-name]/01-cleaning-scope.md`:
-
-```markdown
-# Cleaning Scope: [dataset_name]
-
-## Data Source
-- **Source Skill:** importing-data
-- **Raw Table:** raw_[table_name]
-- **Quality Report Reference:** 05-quality-report.md (from importing-data)
-- **Rows in raw table:** [N]
-
-## Quality Issues Summary
-
-[Extracted from 05-quality-report.md:]
-
-### Completeness Issues
-- **Columns with >10% NULLs:**
-  - [column_name]: [X]% NULL ([N] rows)
-  - [column_name]: [X]% NULL ([N] rows)
-
-### Duplicate Issues
-- **Exact duplicates:** [N] rows ([X]% of total)
-- **Near-duplicates:** [Estimated count if flagged]
-
-### Outlier Issues
-- **[Numeric column]:** [N] outliers (>3 MAD)
-- **[Numeric column]:** [N] outliers (>3 MAD)
-
-### Free Text Issues
-- **[Text column]:** [N] unique values ([X]% uniqueness) - categorization candidate
-- **[Text column]:** [N] unique values ([X]% uniqueness) - categorization candidate
-
-## Issue Prioritization
-
-| Issue | Impact | Severity | Effort | Priority | Rationale |
-|-------|--------|----------|--------|----------|-----------|
-| [Issue description] | High | Critical | Low | **CRITICAL** | [Why this matters] |
-| [Issue description] | High | Significant | Medium | **HIGH** | [Why this matters] |
-| [Issue description] | Medium | Significant | Low | **HIGH** | [Why this matters] |
-| [Issue description] | Low | Minor | Low | **LOW** | [Can skip or document] |
-
-## Cleaning Objectives
-
-Based on prioritization, the cleaning objectives are:
-
-1. **Address CRITICAL issues:** [List specific actions]
-   - Expected impact: [% of rows affected, data quality improvement]
-
-2. **Address HIGH priority issues:** [List specific actions]
-   - Expected impact: [% of rows affected, data quality improvement]
-
-3. **Document MEDIUM/LOW priority issues:** [List what won't be addressed and why]
-   - Rationale: [Effort vs benefit trade-off]
-
-## Success Criteria
-
-After cleaning, the clean_[table_name] table MUST meet:
-- [ ] All CRITICAL issues resolved
-- [ ] All HIGH priority issues resolved
-- [ ] All transformations documented with before/after counts
-- [ ] All exclusions documented with rationale
-- [ ] Verification queries confirm success
-
-## Next Steps
-Proceed to Phase 2: Issue Detection (Agent-Delegated) for deep-dive investigation of prioritized issues.
-```
+Create `analysis/[session-name]/01-cleaning-scope.md` with: ./templates/phase-1.md
 
 **CHECKPOINT:** Before proceeding to Phase 2, you MUST have:
 - [ ] Read and understood `05-quality-report.md` from importing-data
-- [ ] Extracted all detected issues (NULLs, duplicates, outliers, free text)
+- [ ] Extracted all detected issues (NULLs, duplicates, outliers, free text, FK orphans)
 - [ ] Applied prioritization matrix (impact × severity × effort)
+- [ ] Reviewed FK relationships and orphaned records (if multiple tables)
 - [ ] Defined cleaning objectives with success criteria
 - [ ] `01-cleaning-scope.md` created with all sections filled
 
@@ -238,6 +174,38 @@ Repeat for each numeric column requiring outlier analysis.
 
 ---
 
+### Detection 4: Referential Integrity Validation
+
+**If multiple tables exist with FK relationships identified in Phase 1:**
+
+**Use dedicated FK validation agent**
+
+For each FK relationship flagged in Phase 1:
+
+Invoke the `detect-foreign-keys` agent (focused validation mode):
+
+```
+Task tool with agent: detect-foreign-keys
+Parameters:
+- database_path: data/analytics.db
+- child_table: [specific child table]
+- child_column: [FK column]
+- parent_table: [specific parent table]
+- parent_column: [PK column]
+```
+
+The agent will:
+- Confirm value overlap percentage (validate Phase 1 findings)
+- Identify specific orphaned record IDs
+- Assess orphan patterns (recent vs old, specific categories, etc.)
+- Quantify impact on analysis (% of records affected in joins)
+
+**If single table:** Skip this detection, document "N/A - Single table" in detected issues report.
+
+**Document findings in `02-detected-issues.md` using template below.**
+
+---
+
 ### Review Sub-Agent Findings
 
 After all sub-agents return findings:
@@ -252,177 +220,24 @@ After all sub-agents return findings:
 - Do outliers follow any pattern (seasonal, geographic, product-specific)?
 - Which outliers should be excluded vs capped vs flagged?
 
+**For FK orphans (if multiple tables):**
+- Are orphaned records recent (may resolve soon) or old (permanent issue)?
+- Do orphans follow a pattern (specific categories, time periods)?
+- Can orphans be matched to parent records through fuzzy matching?
+- Should orphans be excluded, flagged, or have placeholder parents created?
+
 **Document:** Observations and preliminary decisions for Strategy Phase.
 
 ### Create Detected Issues Report
 
-Create `analysis/[session-name]/02-detected-issues.md`:
-
-```markdown
-# Detected Issues Report: [dataset_name]
-
-## Objective
-Deep-dive investigation of data quality issues identified in Phase 1 scope using sub-agent delegation.
-
-## Detection 1: Duplicate Records
-
-### Exact Duplicates
-
-**Detection Method:** GROUP BY all key columns, COUNT(*) > 1
-
-**Summary:**
-- **Total duplicate groups:** [N]
-- **Total duplicate records:** [N] (excludes first occurrence in each group)
-- **Percentage of dataset:** [X%]
-
-**Top Duplicate Groups:**
-
-| Group # | Key Values | Occurrence Count | Example IDs |
-|---------|------------|------------------|-------------|
-| 1 | [values] | [N] | [IDs] |
-| 2 | [values] | [N] | [IDs] |
-| ... | ... | ... | ... |
-
-**Analysis:**
-[Are these true duplicates or expected repeated values? Pattern observations?]
-
-### Near-Duplicates (Fuzzy Matching)
-
-**Detection Method:** Python fuzzy string matching (>90% similarity threshold)
-
-**Summary:**
-- **Fuzzy groups found:** [N]
-- **High confidence (>95%):** [N groups]
-- **Medium confidence (90-95%):** [N groups]
-
-**High Confidence Groups (Likely Merge Candidates):**
-
-| Group # | Values | Similarity | IDs | Recommended Action |
-|---------|--------|------------|-----|---------------------|
-| 1 | "[value1]" vs "[value2]" | 97% | [IDs] | Merge to "[canonical]" |
-| 2 | "[value1]" vs "[value2]" | 95% | [IDs] | Merge to "[canonical]" |
-
-**Medium Confidence Groups (Manual Review Needed):**
-
-| Group # | Values | Similarity | IDs | Recommended Action |
-|---------|--------|------------|-----|---------------------|
-| 1 | "[value1]" vs "[value2]" | 92% | [IDs] | Review - may be distinct |
-
-**Analysis:**
-[Which fuzzy groups should be merged? Which need manual review?]
-
----
-
-## Detection 2: Outliers (MAD-Based)
-
-### [Numeric Column 1]
-
-**Statistics:**
-- **Median:** [value]
-- **MAD:** [value]
-- **Min:** [value]
-- **Max:** [value]
-- **3 MAD threshold:** [value]
-
-**Outlier Summary:**
-- **Total outliers (>3 MAD):** [N]
-- **Extreme (>5 MAD):** [N]
-- **Significant (3-5 MAD):** [N]
-
-**Top Outlier Examples:**
-
-| Row ID | Value | MAD Distance | Context/Pattern |
-|--------|-------|--------------|-----------------|
-| [ID] | [value] | [X] MAD | [e.g., "Dec 2024 spike"] |
-| [ID] | [value] | [X] MAD | [context] |
-
-**Analysis:**
-[Are these data errors or legitimate? Pattern observed? Recommended action?]
-
-[Repeat for each numeric column flagged in Phase 1]
-
----
-
-## Detection 3: Free Text Issues
-
-[If free text columns were in scope:]
-
-### [Text Column Name]
-
-**Unique Values:** [N]
-**Total Values:** [N]
-**Uniqueness:** [X%]
-
-**Categorization Assessment:**
-[Can values be grouped into categories? Natural groupings identified?]
-
-[If sub-agent analyzed free text for categorization, include findings here]
-
----
-
-## Cross-Issue Analysis
-
-### Records with Multiple Issues
-
-[Do any records have BOTH duplicates AND outliers? List overlaps.]
-
-| Row ID | Issues | Impact |
-|--------|--------|--------|
-| [ID] | Duplicate + Outlier | [Decision needed] |
-
----
-
-## Summary of All Findings
-
-### Issue Counts by Type
-
-| Issue Type | Count | % of Dataset | Severity Assessment |
-|-----------|-------|--------------|---------------------|
-| Exact Duplicates | [N] | [X%] | [High/Medium/Low] |
-| Near-Duplicates | [N] | [X%] | [High/Medium/Low] |
-| Outliers ([col]) | [N] | [X%] | [High/Medium/Low] |
-| Free Text | [N unique] | [X%] | [High/Medium/Low] |
-
-### Records Flagged for Manual Review
-
-**High Priority Review:**
-- [Row IDs and reasons]
-
-**Medium Priority Review:**
-- [Row IDs and reasons]
-
----
-
-## Implications for Phase 3 (Strategy Design)
-
-Based on detected issues, Phase 3 must address:
-
-1. **Duplicate Strategy:**
-   - Exact duplicates: [Keep first / Keep most complete / Merge approach]
-   - Near-duplicates: [Auto-merge high confidence / Manual review medium confidence]
-
-2. **Outlier Strategy:**
-   - [Column]: [Exclude / Cap at threshold / Flag for review / Keep as-is]
-   - [Column]: [approach]
-
-3. **Free Text Strategy:**
-   - [Column]: [Categorization schema / Manual mapping / Keep as-is]
-
-4. **Records to Exclude:**
-   - [List specific IDs or criteria for exclusion]
-
-5. **User Decisions Needed:**
-   - [Which issues require user input in Phase 3?]
-
-## Next Steps
-Proceed to Phase 3: Cleaning Strategy Design with user confirmation on approaches.
-```
+Create `analysis/[session-name]/02-detected-issues.md` with: ./templates/phase-2.md
 
 **CHECKPOINT:** Before proceeding to Phase 3, you MUST have:
 - [ ] Delegated duplicate detection to sub-agent (exact and near-duplicates)
 - [ ] Delegated outlier detection to sub-agent (MAD-based, all flagged columns)
+- [ ] Delegated FK validation to sub-agent (if multiple tables with relationships)
 - [ ] Reviewed all sub-agent findings and documented observations
-- [ ] Created `02-detected-issues.md` with all sections filled
+- [ ] Created `02-detected-issues.md` with all sections filled (including FK orphans if applicable)
 - [ ] Identified specific records/issues for Phase 3 strategy decisions
 - [ ] Listed implications for Phase 3 (what user needs to decide)
 
@@ -569,6 +384,40 @@ Agent will return:
 
 ---
 
+### Decision Framework: Referential Integrity (If Multiple Tables)
+
+**For FK orphaned records identified in Phase 2:**
+
+For each FK relationship with orphaned records, choose ONE approach:
+
+**Option A: Exclude Orphaned Records**
+- **Method:** Filter out child records where FK doesn't match any parent PK
+- **Pros:** Clean referential integrity, INNER JOINs work correctly
+- **Cons:** Data loss
+- **Use when:** Orphaned records are data errors with no business value
+
+**Option B: Preserve with NULL**
+- **Method:** Set orphaned FK values to NULL (retain child records)
+- **Pros:** Preserves child row count, makes orphans explicit
+- **Cons:** Loses relationship information, NULL handling required in queries
+- **Use when:** Child records have value even without parent context
+
+**Option C: Flag and Keep**
+- **Method:** Add `[fk_column]_orphan_flag` column, keep original FK value
+- **Pros:** No data loss, analysts can filter as needed
+- **Cons:** Referential integrity violated until analyst filters
+- **Use when:** Need investigation before deciding, orphans may resolve
+
+**Option D: Create Placeholder Parent**
+- **Method:** Insert synthetic parent record (e.g., id=-1, name="Unknown"), map orphans to it
+- **Pros:** Preserves referential integrity AND child rows, INNER JOINs work
+- **Cons:** Creates synthetic data, may skew parent-level aggregations
+- **Use when:** JOINs required but can't lose child records (e.g., orders with unknown customer)
+
+**Document chosen approach per FK relationship in `03-cleaning-strategy.md`**
+
+---
+
 ### Decision Framework: Business Rules (Optional)
 
 **If business rules were defined in Phase 1 scope:**
@@ -599,131 +448,7 @@ For each rule, choose approach for violations:
 
 ### Create Cleaning Strategy Document
 
-Create `analysis/[session-name]/03-cleaning-strategy.md`:
-
-```markdown
-# Cleaning Strategy: [dataset_name]
-
-## Objective
-Define cleaning approach for all detected issues, with user-approved decisions for execution in Phase 4.
-
-## Issue Summary from Phase 2
-
-[Brief recap of issues detected]
-
-- Exact duplicates: [N]
-- Near-duplicates: [N]
-- Outliers: [N per column]
-- Free text columns: [N]
-- Business rule violations: [N if applicable]
-
----
-
-## Strategy 1: Duplicate Handling
-
-### Exact Duplicates
-**Chosen Approach:** [Option A/B/C]
-
-**Rationale:** [Why this approach fits the data and use case]
-
-**Implementation:**
-- [Specific steps for execution]
-- Expected exclusions: [N] rows ([X]%)
-
-### Near-Duplicates
-**Chosen Approach:** [Option A/B/C]
-
-**Rationale:** [Why this approach]
-
-**Implementation:**
-- [Specific steps, including which groups to merge]
-- Expected exclusions/merges: [N] rows
-
----
-
-## Strategy 2: Outlier Handling
-
-### [Numeric Column 1]
-**Chosen Approach:** [Option A/B/C/D]
-
-**Rationale:** [Why this approach for this column]
-
-**Threshold:** [3 MAD or other value]
-
-**Implementation:**
-- [Specific SQL approach]
-- Expected exclusions/caps: [N] rows ([X]%)
-
-[Repeat for each numeric column]
-
----
-
-## Strategy 3: Free Text Categorization
-
-### [Text Column 1]
-**Chosen Approach:** [Option A/B/C/D]
-
-**Agent Proposal Review:**
-- Categories proposed: [N]
-- High confidence mappings: [N]
-- Manual review needed: [N]
-
-**Final Category Schema:**
-
-| Category | Definition | Value Count |
-|----------|------------|-------------|
-| [Cat 1] | [Definition] | [N] |
-| [Cat 2] | [Definition] | [N] |
-| Other | [Uncategorized] | [N] |
-
-**Implementation:**
-- [SQL CASE statement or mapping table approach]
-- Ambiguous values: [How handled]
-
-[Repeat for each text column]
-
----
-
-## Strategy 4: Business Rules (if applicable)
-
-### Rule 1: [Rule Name]
-**Validation:** [Constraint description]
-
-**Violations Found:** [N] ([X]%)
-
-**Chosen Approach:** [Option A/B/C]
-
-**Implementation:** [How violations will be handled]
-
-[Repeat for each rule]
-
----
-
-## Exclusion Projections
-
-**Estimated total exclusions:**
-
-| Reason | Count | % of Dataset |
-|--------|-------|--------------|
-| Duplicates | [N] | [X]% |
-| Outliers | [N] | [X]% |
-| Business rule violations | [N] | [X]% |
-| Uncategorizable free text | [N] | [X]% |
-| **TOTAL** | **[N]** | **[X]%** |
-
-**Expected clean table size:** [raw count] - [exclusions] = [clean count] rows
-
----
-
-## User Confirmation
-
-- **Date:** [Timestamp]
-- **Confirmed by:** [User]
-- **Modifications from agent proposals:** [None / List changes]
-
-## Next Steps
-Proceed to Phase 4: Cleaning Execution with approved strategies.
-```
+Create `analysis/[session-name]/03-cleaning-strategy.md` with: ./templates/phase-3.md
 
 **CHECKPOINT:** Before proceeding to Phase 4, you MUST have:
 - [ ] Reviewed all detected issues from Phase 2
@@ -731,6 +456,7 @@ Proceed to Phase 4: Cleaning Execution with approved strategies.
 - [ ] Chosen approach for outliers (per numeric column)
 - [ ] Reviewed free text categorization agent proposal (if applicable)
 - [ ] Chosen approach for free text categorization
+- [ ] Chosen approach for FK orphans (if multiple tables with relationships)
 - [ ] Defined business rule handling (if applicable)
 - [ ] User confirmed all strategies via checkpoint review
 - [ ] `03-cleaning-strategy.md` created with all decisions documented
@@ -1027,6 +753,104 @@ WHERE NOT ([rule_1_validation] AND [rule_2_validation] ...);
 
 ---
 
+### Transformation 5: Referential Integrity Enforcement (if multiple tables)
+
+**Based on Strategy from Phase 3:**
+
+**For Orphaned Records (Exclude approach):**
+
+```sql
+-- Remove orphaned child records (Option A from Phase 3)
+CREATE TABLE clean_child_table AS
+SELECT c.*
+FROM raw_child_table c
+INNER JOIN raw_parent_table p ON c.fk_column = p.pk_column;
+-- INNER JOIN automatically excludes orphans
+```
+
+**For Orphaned Records (Preserve with NULL approach):**
+
+```sql
+-- Set orphaned FK values to NULL (Option B from Phase 3)
+CREATE TABLE clean_child_table AS
+SELECT
+  c.*,
+  CASE
+    WHEN p.pk_column IS NULL THEN NULL
+    ELSE c.fk_column
+  END as fk_column
+FROM raw_child_table c
+LEFT JOIN raw_parent_table p ON c.fk_column = p.pk_column;
+```
+
+**For Orphaned Records (Flag and Keep approach):**
+
+```sql
+-- Add orphan flag column (Option C from Phase 3)
+CREATE TABLE clean_child_table AS
+SELECT
+  c.*,
+  CASE
+    WHEN p.pk_column IS NULL AND c.fk_column IS NOT NULL THEN 1
+    ELSE 0
+  END as fk_column_orphan_flag
+FROM raw_child_table c
+LEFT JOIN raw_parent_table p ON c.fk_column = p.pk_column;
+```
+
+**For Orphaned Records (Create Placeholder Parent approach):**
+
+```sql
+-- Step 1: Create placeholder parent record (Option D from Phase 3)
+INSERT INTO raw_parent_table (pk_column, name, other_fields)
+VALUES (-1, 'Unknown', NULL, ...);
+
+-- Step 2: Remap orphans to placeholder
+CREATE TABLE clean_child_table AS
+SELECT
+  c.*,
+  CASE
+    WHEN p.pk_column IS NULL THEN -1
+    ELSE c.fk_column
+  END as fk_column
+FROM raw_child_table c
+LEFT JOIN raw_parent_table p ON c.fk_column = p.pk_column;
+```
+
+**Verification:**
+
+```sql
+-- Verify no orphans remain (for Exclude approach)
+SELECT COUNT(*) as orphans
+FROM clean_child_table c
+LEFT JOIN clean_parent_table p ON c.fk_column = p.pk_column
+WHERE p.pk_column IS NULL AND c.fk_column IS NOT NULL;
+-- Expected: 0
+
+-- Verify NULL remapping (for Preserve with NULL approach)
+SELECT COUNT(*) as nulled_fks
+FROM clean_child_table
+WHERE fk_column IS NULL;
+-- Expected: [count of orphans from Phase 2]
+
+-- Verify flag accuracy (for Flag and Keep approach)
+SELECT fk_column_orphan_flag, COUNT(*)
+FROM clean_child_table
+GROUP BY fk_column_orphan_flag;
+-- Expected: flag=1 count matches orphan count from Phase 2
+```
+
+**Document in `04-cleaning-execution.md`:**
+- FK relationship handled
+- Approach used (Exclude/Preserve/Flag/Placeholder)
+- SQL executed
+- Orphans affected: [N] rows ([X]%)
+- JOIN behavior after transformation
+
+[If single table: "N/A - Single table analysis"]
+
+---
+
 ### Combined Transformation Approach
 
 **If multiple transformations needed, use CTE chain:**
@@ -1080,250 +904,7 @@ SELECT
 
 ### Create Cleaning Execution Log
 
-Create `analysis/[session-name]/04-cleaning-execution.md`:
-
-```markdown
-# Cleaning Execution Log: [dataset_name]
-
-## Objective
-Execute approved cleaning strategies from Phase 3 and create clean_[table_name] ready for analysis.
-
-## Execution Summary
-
-**Start time:** [timestamp]
-**End time:** [timestamp]
-**Duration:** [seconds]
-
----
-
-## Transformation 1: Duplicate Removal
-
-### Strategy
-[Approach chosen in Phase 3]
-
-### SQL Executed
-
-```sql
-[Actual SQL run]
-```
-
-### Results
-- **Raw table rows:** [N]
-- **Duplicates identified:** [N]
-- **Duplicates removed:** [N]
-- **Rows after deduplication:** [N]
-
-### Verification
-
-```sql
-[Verification query]
-```
-
-**Result:** [Pass/Fail - if fail, explain]
-
-### Spot Checks
-
-Checked duplicate group [example]:
-- Before: [N] occurrences
-- After: 1 occurrence (kept [which one])
-- ✓ Correct
-
----
-
-## Transformation 2: Outlier Handling
-
-### Strategy
-[Approach chosen in Phase 3]
-
-### [Numeric Column 1]
-
-**SQL Executed:**
-
-```sql
-[Actual SQL]
-```
-
-**Statistics:**
-- Median: [value]
-- MAD: [value]
-- 3 MAD threshold: [value]
-- Outliers identified: [N]
-
-**Results:**
-- Outliers [excluded/capped/flagged]: [N]
-- Rows after transformation: [N]
-
-**Verification:**
-
-```sql
-[Verification query]
-```
-
-**Result:** [Pass/Fail]
-
-[Repeat for each numeric column]
-
----
-
-## Transformation 3: Free Text Categorization
-
-### Strategy
-[Approach chosen in Phase 3]
-
-### [Text Column 1]
-
-**Category Schema:**
-
-| Category | Definition | Value Count |
-|----------|------------|-------------|
-| [Cat 1] | [Def] | [N] |
-| [Cat 2] | [Def] | [N] |
-| Other | [Uncategorized] | [N] |
-
-**SQL Executed:**
-
-```sql
-[Mapping table creation]
-[Categorization application]
-```
-
-**Results:**
-
-| Category | Count | % |
-|----------|-------|---|
-| [Cat 1] | [N] | [X]% |
-| [Cat 2] | [N] | [X]% |
-| Other | [N] | [X]% |
-
-**Uncategorizable values excluded:** [N]
-
-**Verification:**
-
-```sql
-[Category distribution check]
-```
-
-**Result:** [Distribution matches expectations]
-
-[Repeat for each text column]
-
----
-
-## Transformation 4: Business Rule Enforcement
-
-[If applicable]
-
-### Rules Applied
-1. [Rule 1]: [Description]
-2. [Rule 2]: [Description]
-
-**SQL Executed:**
-
-```sql
-[Validation SQL]
-```
-
-**Results:**
-- Violations found: [N]
-- Violations excluded: [N]
-
----
-
-## Exclusion Summary
-
-**Total Exclusions by Reason:**
-
-| Reason | Count | % of Raw Dataset |
-|--------|-------|------------------|
-| Duplicates | [N] | [X]% |
-| Outliers ([col1]) | [N] | [X]% |
-| Outliers ([col2]) | [N] | [X]% |
-| Uncategorizable free text | [N] | [X]% |
-| Business rule violations | [N] | [X]% |
-| **TOTAL EXCLUDED** | **[N]** | **[X]%** |
-
-### Row Count Reconciliation
-
-```
-Raw table (raw_[table]):        [N] rows
-Exclusions (all reasons):       [N] rows
-Clean table (clean_[table]):    [N] rows
-
-Verification: [N] - [N] = [N] ✓
-```
-
----
-
-## Clean Table Schema
-
-```sql
-PRAGMA table_info(clean_[table_name]);
-```
-
-**Result:**
-```
-[Paste schema showing columns, including any new columns like category fields or flags]
-```
-
----
-
-## Before/After Comparison
-
-### Data Quality Metrics
-
-| Metric | Raw Table | Clean Table | Improvement |
-|--------|-----------|-------------|-------------|
-| Total rows | [N] | [N] | -[X]% |
-| Duplicate groups | [N] | 0 | 100% |
-| NULL % in [col] | [X]% | [X]% | [improvement] |
-| Outliers in [col] | [N] | 0 | 100% |
-| Free text unique values | [N] | [N categories] | [reduction] |
-
-### Sample Records
-
-**Before (raw_[table]):**
-```sql
-SELECT * FROM raw_[table] LIMIT 3;
-```
-
-**Result:**
-```
-[Paste sample showing issues]
-```
-
-**After (clean_[table]):**
-```sql
-SELECT * FROM clean_[table] LIMIT 3;
-```
-
-**Result:**
-```
-[Paste sample showing cleaned data]
-```
-
----
-
-## Issues Encountered
-
-[Document any problems during execution and how resolved]
-
-Example:
-- Issue: Category mapping had typo in value
-- Resolution: Corrected mapping table, re-ran categorization
-- Impact: [describe]
-
----
-
-## Clean Table Status
-
-- **Table name:** clean_[table_name]
-- **Location:** data/analytics.db
-- **Row count:** [N]
-- **Ready for analysis:** ✓ Yes / ✗ No (if no, explain)
-
-## Next Steps
-Proceed to Phase 5: Verification & Documentation to validate cleaning results.
-```
+Create `analysis/[session-name]/04-cleaning-execution.md` with: ./templates/phase-4.md
 
 **CHECKPOINT:** Before proceeding to Phase 5, you MUST have:
 - [ ] Executed all transformations from Phase 3 strategy
@@ -1510,43 +1091,7 @@ SELECT [original_col], [col]_category FROM clean_[table_name] LIMIT 20;
 
 ### Create Verification Report
 
-Create `analysis/[session-name]/05-verification-report.md`:
-
-[The template is very long - I'll include a condensed version here. The full template from Phase 7 can be used]
-
-```markdown
-# Verification Report: [dataset_name]
-
-## Objective
-Validate cleaning transformations, quantify quality improvements, document complete audit trail.
-
-## Executive Summary
-- Raw table: [N] rows
-- Clean table: [N] rows
-- Total exclusions: [N] ([X]%)
-- Verification status: ✓ All validations passed
-
-## Row Count Reconciliation
-[Reconciliation validation]
-
-## Transformation Verification
-[Per transformation type validation results]
-
-## Data Quality Improvements
-[Before/after comparison tables]
-
-## Exclusion Accounting
-[Complete exclusion summary]
-
-## Confidence Assessment
-[High/Medium/Low confidence per transformation]
-
-## Limitations
-[What was NOT addressed]
-
-## Clean Table Readiness
-✓ clean_[table_name] ready for analysis
-```
+Create `analysis/[session-name]/05-verification-report.md` with: ./templates/phase-5.md
 
 **CHECKPOINT:** Before concluding cleaning-data skill, you MUST have:
 - [ ] Verified row count reconciliation (raw = clean + exclusions)
