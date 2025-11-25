@@ -19,10 +19,11 @@ Guided investigation is appropriate when:
 ## Prerequisites
 
 Before using this skill, you MUST:
-1. Have data imported into SQLite database (`just import-csvs`)
-2. Have created an analysis workspace (`just start-analysis guided-investigation <name>`)
-3. Have a clear investigative goal from the user
-4. Be familiar with the component skills:
+1. Have data imported into SQLite database using the `importing-data` skill
+2. Have data quality validated and cleaned using the `cleaning-data` skill (MANDATORY - never skip)
+3. Have created an analysis workspace (`just start-analysis guided-investigation <name>`)
+4. Have a clear investigative goal from the user
+5. Be familiar with the component skills:
    - `understanding-data` - for data profiling
    - `writing-queries` - for SQL query construction
    - `interpreting-results` - for result analysis
