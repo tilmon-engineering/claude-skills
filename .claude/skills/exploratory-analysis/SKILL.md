@@ -19,10 +19,11 @@ Exploratory analysis is appropriate when:
 ## Prerequisites
 
 Before using this skill, you MUST:
-1. Have data imported into SQLite database (`just import-csvs`)
-2. Have created an analysis workspace (`just start-analysis exploratory-analysis <name>`)
-3. Have NO preconceived hypotheses or specific questions (if you do, use hypothesis-testing or guided-investigation instead)
-4. Be familiar with the component skills:
+1. Have data imported into SQLite database using the `importing-data` skill
+2. Have data quality validated and cleaned using the `cleaning-data` skill (MANDATORY - never skip)
+3. Have created an analysis workspace (`just start-analysis exploratory-analysis <name>`)
+4. Have NO preconceived hypotheses or specific questions (if you do, use hypothesis-testing or guided-investigation instead)
+5. Be familiar with the component skills:
    - `understanding-data` - for data profiling
    - `writing-queries` - for SQL query construction
    - `interpreting-results` - for result analysis
