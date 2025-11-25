@@ -47,22 +47,22 @@ Raw CSV Files → [importing-data] → raw_* tables → [cleaning-data] → clea
 **`understanding-data`** - Systematic data profiling and exploration
 - **When to use**: Beginning investigation of any dataset
 - **Capabilities**: Schema inspection, distributions, relationships, quality checks
-- **Location**: `.claude/skills/datapeeker/components/understanding-data.md`
+- **Location**: `.claude/skills/understanding-data/SKILL.md`
 
 **`writing-queries`** - Construct correct, efficient SQL queries
 - **When to use**: Translating analytical questions to SQL
 - **Capabilities**: Query patterns, optimization, common pitfalls
-- **Location**: `.claude/skills/datapeeker/components/writing-queries.md`
+- **Location**: `.claude/skills/writing-queries/SKILL.md`
 
 **`interpreting-results`** - Analyze query results with intellectual honesty
 - **When to use**: After executing queries, before drawing conclusions
 - **Capabilities**: Statistical interpretation, bias detection, confidence assessment
-- **Location**: `.claude/skills/datapeeker/components/interpreting-results.md`
+- **Location**: `.claude/skills/interpreting-results/SKILL.md`
 
 **`creating-visualizations`** - Generate effective text-based visualizations
 - **When to use**: Communicating findings from analysis
 - **Capabilities**: Chart selection, ASCII art, markdown tables
-- **Location**: `.claude/skills/datapeeker/components/creating-visualizations.md`
+- **Location**: `.claude/skills/creating-visualizations/SKILL.md`
 
 ## Process Skills
 
@@ -70,25 +70,25 @@ Raw CSV Files → [importing-data] → raw_* tables → [cleaning-data] → clea
 - **When to use**: Initial investigation, no specific hypothesis
 - **Phases**: Understanding → profiling → pattern discovery → synthesis
 - **Prerequisites**: Data imported and cleaned
-- **Location**: `.claude/skills/datapeeker/processes/exploratory-analysis.md`
+- **Location**: `.claude/skills/exploratory-analysis/SKILL.md`
 
 **`guided-investigation`** - Investigate open-ended business questions
 - **When to use**: Answering "why did X happen?" or "what's driving Y?"
 - **Phases**: Question decomposition → mapping → incremental investigation → synthesis
 - **Prerequisites**: Data imported and cleaned
-- **Location**: `.claude/skills/datapeeker/processes/guided-investigation.md`
+- **Location**: `.claude/skills/guided-investigation/SKILL.md`
 
 **`hypothesis-testing`** - Rigorously test specific hypotheses
 - **When to use**: Validating specific claims or theories
 - **Phases**: Hypothesis formulation → test design → analysis → interpretation
 - **Prerequisites**: Data imported and cleaned
-- **Location**: `.claude/skills/datapeeker/processes/hypothesis-testing.md`
+- **Location**: `.claude/skills/hypothesis-testing/SKILL.md`
 
 **`comparative-analysis`** - Compare segments, cohorts, or time periods
 - **When to use**: Understanding differences between groups
 - **Phases**: Definition → measurement → comparison → explanation
 - **Prerequisites**: Data imported and cleaned
-- **Location**: `.claude/skills/datapeeker/processes/comparative-analysis.md`
+- **Location**: `.claude/skills/comparative-analysis/SKILL.md`
 
 ## Workflow Patterns
 
