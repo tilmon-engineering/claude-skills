@@ -1,17 +1,22 @@
 ---
 name: creating-visualizations
-description: Component skill for creating effective text-based visualizations in DataPeeker analysis sessions
+description: Component skill for creating effective visualizations (terminal-based and image-based) in DataPeeker analysis sessions
 ---
 
 # Creating Visualizations
 
 ## Purpose
 
-This component skill guides creation of clear, effective text-based visualizations for analytics documentation. Use it when:
+This component skill guides creation of clear, effective visualizations for analytics documentation. Use it when:
 - Presenting query results in a more visual format
 - Need to reveal patterns that are hard to see in raw numbers
 - Creating reports or documentation that will be read by stakeholders
+- Documenting data workflows, lineage, or database schemas
 - Referenced by process skills requiring data visualization
+
+**Supports two approaches:**
+- **Terminal-based** (plotext, sparklines, etc.) - For interactive analysis
+- **Image-based** (Kroki: Mermaid, GraphViz, Vega-Lite) - For reports and complex diagrams
 
 ## Prerequisites
 
@@ -77,18 +82,28 @@ Ask these questions in order:
 
 ### Available Visualization Types
 
-**For DataPeeker (markdown-based), we use text-based formats:**
+**DataPeeker supports two complementary approaches:**
 
+#### Terminal-Based Formats (Primary for analysis):
 1. **Markdown Tables** - Structured data with alignment
-2. **ASCII Bar Charts** - Visual magnitude comparison
-3. **Sparklines** - Compact trend indicators
-4. **ASCII Histograms** - Distribution visualization
+2. **ASCII Bar Charts** - Visual magnitude comparison (plotext, termgraph)
+3. **Sparklines** - Compact trend indicators (sparklines library)
+4. **ASCII Histograms** - Distribution visualization (plotext)
 5. **Callout Boxes** - Highlighting key metrics
 6. **Ranked Lists** - Ordered items with context
 7. **Comparison Tables** - Side-by-side metrics
-8. **Character Plots** - Simple scatter or time series
+8. **Line Plots** - Time series (plotext, asciichartpy)
 
-**Choose based on what best reveals the pattern you want to communicate.**
+#### Image-Based Formats (For reports and complex diagrams):
+1. **Mermaid** - Flowcharts, Gantt charts, workflows
+2. **GraphViz** - Network graphs, data lineage, hierarchies
+3. **Vega-Lite** - Statistical charts (bar, line, scatter)
+4. **ERD/DBML** - Database schemas
+
+**Choose based on:**
+- What pattern you want to communicate
+- Where the output will be viewed (terminal vs report)
+- Complexity of the visualization needed
 
 ---
 
@@ -157,346 +172,112 @@ Best practices:
 
 ## Phase 3: Create Visualization
 
-**Goal:** Build the actual visualization using text-based formats.
-
-### Format 1: Markdown Tables
-
-**Use for:** Structured data with multiple columns, exact values matter
-
-**Basic table:**
-```markdown
-| Category    | Orders | Revenue    | Avg Order Value |
-|-------------|-------:|:----------:|----------------:|
-| Electronics | 1,523  | $345,678   | $226.89         |
-| Home        | 2,341  | $298,432   | $127.48         |
-| Clothing    | 3,456  | $234,567   | $67.89          |
-```
-
-**Best practices:**
-- Align numbers right, text left (use `:---:` or `---:` in header separator)
-- Include totals row when appropriate
-- Use bold for emphasis: `**$345,678**`
-- Add percentage columns for context
-- Keep columns to 5-7 maximum for readability
-
-**Table with percentages:**
-```markdown
-| Category    | Revenue    | % of Total | Growth YoY |
-|-------------|:----------:|-----------:|-----------:|
-| Electronics | $345,678   |      42.5% |    +23.4%  |
-| Home        | $298,432   |      36.8% |    +15.2%  |
-| Clothing    | $234,567   |      28.9% |     -8.1%  |
-| **Total**   | **$811,677** | **100.0%** |  **+12.3%** |
-```
-
-### Format 2: ASCII Bar Charts
-
-**Use for:** Visual magnitude comparison, relative sizes matter more than exact values
-
-**Horizontal bars:**
-```markdown
-## Sales by Category
-
-Electronics  [████████████████████████████] 345,678  (42.5%)
-Home & Garden [████████████████████████]     298,432  (36.8%)
-Clothing      [███████████████████]          234,567  (28.9%)
-Sports        [██████████]                   134,234  (16.5%)
-Toys          [████]                          56,789   (7.0%)
-```
-
-**How to create:**
-1. Calculate max value (scale endpoint)
-2. Determine bar length: `(value / max_value) * bar_width`
-3. Use █ or = characters for filled portions
-4. Include value and percentage after bar
-5. Keep bar width consistent (typically 30-50 characters)
-
-**Example with script:**
-```python
-# Helper for bar generation
-def generate_bar(value, max_value, width=30):
-    filled = int((value / max_value) * width)
-    return '█' * filled + ' ' * (width - filled)
-
-# Usage in markdown
-for category, value in sorted_data:
-    bar = generate_bar(value, max_value)
-    pct = (value / total) * 100
-    print(f"{category:15} [{bar}] {value:,} ({pct:.1f}%)")
-```
-
-**Vertical bars (for smaller datasets):**
-```markdown
-## Daily Sales Pattern
-
-Day        Sales
-Mon        ████████ 1,234
-Tue        ██████████ 1,567
-Wed        ████████████ 1,890
-Thu        ██████████████ 2,134
-Fri        ████████████████ 2,456
-Sat        ████████ 1,123
-Sun        ██████ 945
-```
-
-### Format 3: Sparklines
-
-**Use for:** Compact trend visualization, showing direction and volatility
-
-**Simple sparklines using Unicode characters:**
-```markdown
-## Monthly Revenue Trends
-
-Q1 2024: ▁▂▃▄▅▆▇█  (Strong growth, $1.2M total)
-Q2 2024: ████████  (Plateau, $1.8M total)
-Q3 2024: ████▇▆▅▄  (Decline, $1.5M total)
-Q4 2024: ▄▅▆▇███▉  (Recovery, $1.9M total)
-```
-
-**Sparkline characters (smallest to largest):**
-- ▁ ▂ ▃ ▄ ▅ ▆ ▇ █
-
-**How to create:**
-1. Normalize values to 0-8 range
-2. Map to corresponding block character
-3. Place inline with context text
-
-**Alternative with ASCII:**
-```markdown
-## Customer Acquisition Trend (12 months)
-
-Jan-Dec 2024:  .-'^~*^"~-._  (Peak in July, recovering in December)
-Target line:   ------------
-```
-
-**When to use:**
-- Space is limited
-- Showing multiple trends for comparison
-- Trend direction matters more than exact values
-- Inline with text narrative
-
-### Format 4: ASCII Histograms
-
-**Use for:** Distribution visualization, showing shape and spread
-
-**Distribution of order values:**
-```markdown
-## Order Value Distribution
-
- $0-24    [████████████████████]           2,345 orders (34.5%)
- $25-49   [██████████████████████████]     3,012 orders (44.3%)
- $50-74   [████████████]                   1,456 orders (21.4%)
- $75-99   [██████]                           678 orders  (10.0%)
-$100-149  [████]                             456 orders   (6.7%)
-$150-199  [██]                               234 orders   (3.4%)
-$200+     [█]                                123 orders   (1.8%)
-
-Total: 6,789 orders | Median: $42 | Mean: $58 | Std Dev: $47
-```
-
-**Best practices:**
-- Use 5-10 buckets (not too many, not too few)
-- Equal bucket widths when possible
-- Include bucket for outliers ($200+)
-- Show summary statistics below
-- Label axes clearly
-
-**Vertical histogram (for presentations):**
-```markdown
-## Page Load Time Distribution
-
-3000ms  |
-        |
-2500ms  |          █
-        |          █
-2000ms  |     █    █
-        |     █    █    █
-1500ms  |     █    █    █    █
-        |     █    █    █    █    █
-1000ms  |     █    █    █    █    █    █
-        |     █    █    █    █    █    █    █
- 500ms  |     █    █    █    █    █    █    █    █
-        |___________________________________
-         0-   200- 400- 600- 800- 1000- 1200- 1400- 1600+
-         200  400  600  800  1000  1200  1400  1600  (ms)
-
-Most common: 600-800ms | 95th percentile: 1,400ms
-```
-
-### Format 5: Callout Boxes
-
-**Use for:** Highlighting single key metrics or insights
-
-**Simple callout:**
-```markdown
----
-**KEY FINDING**
-
-Revenue increased **23.4%** from Q3 to Q4
-($1.5M → $1.9M, +$400K absolute growth)
-
----
-```
-
-**Multi-metric dashboard:**
-```markdown
----
-## Q4 2024 Summary
-
-📊 **Total Revenue:** $1,876,543 (↑ 23.4% QoQ)
-🛒 **Orders:** 12,345 (↑ 18.2% QoQ)
-💵 **Avg Order Value:** $152.14 (↑ 4.4% QoQ)
-👥 **Active Customers:** 8,934 (↑ 15.7% QoQ)
-
----
-```
-
-**Comparison callout:**
-```markdown
----
-## Treatment vs Control Comparison
-
-**Treatment Group (n=1,234)**
-- Conversion Rate: **3.2%** (↑0.8pp vs control)
-- Revenue: **$156,789** (+$23,456)
-- AOV: **$127.14** (+$4.23)
-
-**Control Group (n=1,198)**
-- Conversion Rate: 2.4%
-- Revenue: $133,333
-- AOV: $122.91
-
-**Statistical Significance:** p < 0.05 ✓
-
----
-```
-
-### Format 6: Ranked Lists
-
-**Use for:** Top/bottom N, ordered items with narrative
-
-**Simple ranked list:**
-```markdown
-## Top 5 Products by Revenue (Q4 2024)
-
-1. **Widget Pro** — $234,567 (18.2% of total)
-   - Units sold: 2,345 | AOV: $100.03
-   - Growth: +45% vs Q3
-
-2. **Gadget Plus** — $198,432 (15.4% of total)
-   - Units sold: 4,567 | AOV: $43.44
-   - Growth: +23% vs Q3
-
-3. **Doohickey Elite** — $176,543 (13.7% of total)
-   - Units sold: 876 | AOV: $201.52
-   - Growth: +12% vs Q3
-
-4. **Thingamajig** — $145,678 (11.3% of total)
-   - Units sold: 3,456 | AOV: $42.16
-   - Growth: -5% vs Q3
-
-5. **Whatsit Standard** — $123,456 (9.6% of total)
-   - Units sold: 2,678 | AOV: $46.11
-   - Growth: +8% vs Q3
-
-**Top 5 represent 68.2% of total revenue**
-```
-
-**Comparative ranked list:**
-```markdown
-## Best and Worst Performing Regions
-
-### Top 3 (by growth)
-1. 🔥 **West Region** — +34.5% growth | $456K revenue
-2. 📈 **South Region** — +28.2% growth | $389K revenue
-3. ✓ **Central Region** — +15.7% growth | $312K revenue
-
-### Bottom 3 (by growth)
-1. ⚠️ **Northeast Region** — -8.3% decline | $278K revenue
-2. 📉 **Mid-Atlantic** — -4.1% decline | $234K revenue
-3. → **Northwest** — +1.2% growth | $198K revenue
-
-**Note:** All regions increased in absolute terms, but growth rates varied widely.
-```
-
-### Format 7: Comparison Tables
-
-**Use for:** Side-by-side metric comparison across segments or time periods
-
-**Period-over-period comparison:**
-```markdown
-## Q4 2024 vs Q4 2023 Performance
-
-| Metric               | Q4 2023   | Q4 2024   | Change     | % Change |
-|----------------------|----------:|----------:|-----------:|---------:|
-| Revenue              | $1.52M    | $1.88M    | +$360K     |  +23.7%  |
-| Orders               | 10,234    | 12,345    | +2,111     |  +20.6%  |
-| Avg Order Value      | $148.52   | $152.14   | +$3.62     |   +2.4%  |
-| Active Customers     | 7,456     | 8,934     | +1,478     |  +19.8%  |
-| Customer Acq Cost    | $42.15    | $38.76    | -$3.39     |   -8.0%  |
-| Customer LTV         | $456.78   | $523.12   | +$66.34    |  +14.5%  |
-```
-
-**Segment comparison:**
-```markdown
-## B2B vs B2C Customer Behavior
-
-| Metric                    | B2B        | B2C       | B2B/B2C Ratio |
-|---------------------------|:----------:|:---------:|--------------:|
-| Avg Order Value           | $1,234.56  | $87.23    |         14.2x |
-| Orders per Customer       | 8.4        | 2.1       |          4.0x |
-| Annual Customer Value     | $10,370    | $183      |         56.7x |
-| Purchase Frequency        | Monthly    | Quarterly |             — |
-| Repeat Purchase Rate      | 87%        | 34%       |          2.6x |
-| Customer Support Tickets  | 0.8/order  | 0.2/order |          4.0x |
-
-**Insight:** B2B customers are higher value but require more support resources.
-```
-
-### Format 8: Character Plots
-
-**Use for:** Simple scatter plots or relationships when trend matters
-
-**Scatter plot (relationship between two variables):**
-```markdown
-## Relationship: Order Value vs Shipping Speed
-
-High Value |
-($200+)    |                               * *
-           |                          *   * * *
-           |                       *  * * *
-Med Value  |                   *  * * *
-($100-199) |               * * * * *
-           |           * * * * *
-           |       * * * * *
-Low Value  |   * * * * *
-($0-99)    | * * *
-           |_________________________________
-             1-day   2-day   3-day   5-day   7-day
-                    Shipping Speed
-
-**Pattern:** Customers choosing faster shipping tend to have higher order values.
-```
-
-**Time series plot:**
-```markdown
-## Daily Order Volume (Last 30 Days)
-
-3000 |                            *
-     |                         *     *
-2500 |                      *
-     |                   *        *
-2000 |                *                 *
-     |             *                       *
-1500 |          *                             *
-     |       *                                   *
-1000 |    *                                         *
-     |_________________________________________________
-      1    5    10   15   20   25   30
-                    Days Ago
-
-**Trend:** Volume peaked mid-month during promotion, returning to baseline.
-```
+**Goal:** Build the actual visualization using appropriate format and tools.
+
+### Two Visualization Approaches
+
+DataPeeker supports two complementary visualization approaches:
+
+#### 1. Terminal-Based Visualizations (Primary)
+
+**Use for:**
+- Interactive terminal/Jupyter notebook analysis
+- Quick data exploration
+- Markdown documentation that stays in terminal
+- Fast iteration without external dependencies
+
+**Available formats:**
+1. **Markdown Tables** - Structured data with multiple columns, exact values
+2. **ASCII Bar Charts** - Visual magnitude comparison, relative sizes
+3. **Sparklines** - Compact trend indicators with Unicode characters
+4. **ASCII Histograms** - Distribution visualization, shape and spread
+5. **Callout Boxes** - Highlighting key metrics or insights
+6. **Ranked Lists** - Top/bottom N items with narrative context
+7. **Comparison Tables** - Side-by-side metrics across segments or time
+8. **Line Plots** - Time series and trends
+
+**→ See [terminal-formats.md](./terminal-formats.md) for implementation**
+
+#### 2. Image-Based Visualizations (via Kroki)
+
+**Use for:**
+- Reports and presentations (embedded images)
+- Complex diagrams (workflows, data lineage, relationships)
+- Database schemas and architecture
+- Documentation that needs to be viewed outside terminal
+- High-quality charts for stakeholder communication
+
+**Available formats:**
+1. **Mermaid** - Flowcharts, Gantt charts, sequence diagrams
+2. **GraphViz** - Network graphs, data lineage, hierarchies
+3. **Vega-Lite** - Statistical charts (bar, line, scatter, histograms)
+4. **D2** - Modern diagrams, architecture, data models
+5. **ERD/DBML** - Database schemas and relationships
+
+**→ See [image-formats.md](./image-formats.md) for implementation**
+
+### Choosing Between Terminal and Image Formats
+
+**Use Terminal formats when:**
+- Working interactively in analysis session
+- Output stays in markdown/terminal
+- Quick iteration and exploration
+- Simple charts and tables
+
+**Use Image formats when:**
+- Creating final reports or presentations
+- Visualizing complex relationships (data lineage, workflows)
+- Documenting database schemas
+- Output needs to be embedded in documents/web
+- Audience views outside terminal environment
+
+**Can use both:**
+- Terminal for exploration → Image for final report
+- Tables (terminal) + Diagrams (image) in same document
+
+### ⚠️ CRITICAL: Tool Usage Requirements
+
+**MANDATORY:** All visualizations (bar charts, line plots, histograms, sparklines, scatter plots) **MUST** use established visualization tools. **NEVER create these manually.**
+
+**✅ ALLOWED - Manual Creation:**
+- Markdown tables with exact values
+- Callout boxes and formatted text
+- Ranked lists with exact numbers
+
+**❌ PROHIBITED - Manual Creation:**
+- Bar charts (no manual █ characters)
+- Line plots or time series (no manual * or - characters)
+- Histograms
+- Sparklines (no manual ▁▂▃▄▅▆▇█ characters)
+- Any visualization requiring scaling or positioning
+
+### Implementation Details
+
+**📄 For visualization implementations, use these guides:**
+
+#### Terminal-Based Visualizations
+**[terminal-formats.md](./terminal-formats.md)**
+
+This document provides:
+- **Mandatory tool usage principles** (read this first!)
+- **Quick Start guide** with tool installation (plotext, asciichartpy, termgraph, sparklines)
+- **Complete code examples** for each visualization type using proper tools
+- **SQLite integration examples** for generating visualizations from query results
+
+**The rule:** If it visualizes relative magnitudes, trends, or distributions → USE A TOOL. If it's exact numbers in a table → Manual creation is fine.
+
+#### Image-Based Visualizations
+**[image-formats.md](./image-formats.md)**
+
+This document provides:
+- **Kroki overview** - Unified API for generating diagrams from text
+- **Quick Start guide** with Python examples and API usage
+- **Format selection guide** - When to use Mermaid vs GraphViz vs Vega-Lite
+- **Complete implementation guides** for each format in `formats/` directory:
+  - [Mermaid](./formats/mermaid.md) - Flowcharts, Gantt, sequences
+  - [GraphViz](./formats/graphviz.md) - Network graphs, data lineage
+  - [Vega-Lite](./formats/vega-lite.md) - Statistical charts
+- **DataPeeker integration examples** - Visualizing data workflows and schemas
 
 ---
 
@@ -562,52 +343,6 @@ only 15% of order volume, indicating premium product performance.
 - Sports category smallest but growing fastest (+45% QoQ)
 ```
 
-### Full Annotated Example
-
-```markdown
-## Top 10 Products by Revenue — Q4 2024
-
-**Key Finding:** Top 10 products generated $1.2M (64% of total revenue), with Widget Pro alone accounting for nearly 1 in 5 dollars.
-
-| Rank | Product           | Revenue    | % of Total | Units Sold | Avg Price |
-|-----:|:------------------|:----------:|-----------:|-----------:|----------:|
-|   1. | Widget Pro        | $234,567   |      18.2% |      2,345 |   $100.03 |
-|   2. | Gadget Plus       | $198,432   |      15.4% |      4,567 |    $43.44 |
-|   3. | Doohickey Elite   | $176,543   |      13.7% |        876 |   $201.52 |
-|   4. | Thingamajig       | $145,678   |      11.3% |      3,456 |    $42.16 |
-|   5. | Whatsit Standard  | $123,456   |       9.6% |      2,678 |    $46.11 |
-|   6. | Contraption       | $98,765    |       7.7% |      1,987 |    $49.71 |
-|   7. | Apparatus         | $87,654    |       6.8% |      1,234 |    $71.04 |
-|   8. | Gizmo             | $76,543    |       5.9% |      3,456 |    $22.15 |
-|   9. | Mechanism         | $65,432    |       5.1% |        987 |    $66.29 |
-|  10. | Device            | $54,321    |       4.2% |      2,134 |    $25.46 |
-| **Total Top 10** | **—**    | **$1,261,391** | **63.5%** | **23,720** | **$53.18** |
-| All Other Products | —      | $726,152   |      36.5% |     34,281 |    $21.18 |
-
-**Data notes:**
-- Source: analytics.db, aggregated from orders and order_items tables
-- Time period: October 1 - December 31, 2024 (92 days)
-- Excludes returns, refunds, and cancelled orders (47 orders excluded)
-
-**What this shows:**
-- Revenue concentration: Top 10 products = 64% of revenue but only 41% of units
-- Price segmentation: Widget Pro and Doohickey Elite are premium products (avg >$100)
-- Volume products: Gadget Plus and Thingamajig drive revenue through volume
-- Long tail: "All Other" represents 127 products with lower individual sales
-
-**Implications:**
-- Inventory: Prioritize stock of top 10 products to avoid stockouts
-- Marketing: Feature Widget Pro prominently (highest revenue per SKU)
-- Risk: Revenue concentration in top 10 creates dependency risk
-- Opportunity: Investigate why "All Other" products have lower AOV
-
-**Follow-up questions:**
-- How has top 10 list changed vs Q3? (product ranking stability)
-- What's the profit margin profile of top 10 vs others? (revenue ≠ profit)
-- Are top 10 products also highest rated? (quality vs marketing driven)
-```
-
----
 
 ## Visualization Best Practices
 
@@ -702,33 +437,35 @@ only 15% of order volume, indicating premium product performance.
 
 ### Pattern 2: Distribution Summary
 
-```markdown
-## Customer Lifetime Value Distribution
+**⚠️ Use plotext to create histograms - DO NOT create manually**
 
+Show distribution with summary statistics:
+
+```python
+import plotext as plt
+import statistics
+
+# Customer LTV values from query
+ltv_values = [423, 687, 892, 2145, ...]  # Your data
+
+plt.hist(ltv_values, bins=7)
+plt.title('Customer Lifetime Value Distribution')
+plt.xlabel('Customer LTV ($)')
+plt.ylabel('Number of Customers')
+plt.show()
+
+# Show summary statistics
+print(f"\nSummary Statistics:")
+print(f"Median LTV: ${statistics.median(ltv_values):,.0f}")
+print(f"Mean LTV: ${statistics.mean(ltv_values):,.0f}")
+print(f"75th percentile: ${statistics.quantiles(ltv_values, n=4)[2]:,.0f}")
 ```
-      |                          █
-      |                          █
-      |                    █     █
-      |               █    █     █
-      |          █    █    █     █    █
-      |     █    █    █    █     █    █    █
-      |___________________________________
-        $0-   $100- $250- $500- $1K-  $2K-  $5K+
-        100   250   500   1K    2K    5K
 
-**Summary Statistics:**
-- Median LTV: **$423** (50% of customers below this)
-- Mean LTV: **$687** (pulled up by high-value customers)
-- 75th percentile: **$892**
-- 95th percentile: **$2,145**
-- Top 5%: **>$5,000** (only 234 customers, 18% of revenue)
-
-**Interpretation:** Right-skewed distribution shows small number of high-value
-customers drive disproportionate revenue. Retention focus should target
-customers crossing $500 threshold (top 25%).
-```
+**See terminal-formats.md Format 4 for complete histogram examples.**
 
 ### Pattern 3: Segmentation Analysis
+
+**✅ Tables are fine for exact values, use plotext/termgraph for visual breakdown**
 
 ```markdown
 ## Customer Segmentation by Purchase Behavior
@@ -741,72 +478,72 @@ customers crossing $500 threshold (top 25%).
 | **At Risk**     |       892 |        1.2 |    $156 |         5.1% | Win-back      |
 | **Lost**        |     2,134 |        1.0 |     $87 |         6.8% | Low priority  |
 
-**Visual breakdown:**
-Champions    [███]                234 customers → $501,030 revenue
-Loyal        [█████████████]    1,456 customers → $1,299,552 revenue
-Potential    [████████████████] 3,678 customers → $1,055,586 revenue
-At Risk      [██]                 892 customers → $139,152 revenue
-Lost         [██]               2,134 customers → $185,658 revenue
-
 **Key insight:** Top two segments (Champions + Loyal) are only 18% of customer
 base but generate 66% of revenue. These 1,690 customers should receive majority
 of retention investment.
 ```
 
-### Pattern 4: Time Series with Annotations
+**For visual breakdown, use plotext:**
+```python
+import plotext as plt
 
-```markdown
-## Monthly Revenue Trend with Key Events
+segments = ['Champions', 'Loyal', 'Potential', 'At Risk', 'Lost']
+revenue = [501030, 1299552, 1055586, 139152, 185658]
 
-$2.0M |                                           *
-      |                                      * *
-$1.8M |                                   *
-      |                              * *
-$1.6M |                         * *               ← New product launch
-      |                    * *
-$1.4M |               * *
-      |          * *                              ← Pricing change
-$1.2M |     * *
-      |  *                                        ← Q4 start
-$1.0M |________________________________________________
-       Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
-
-**Key Events:**
-- **Oct 1:** Q4 begins, seasonal uptick expected
-- **Oct 15:** Pricing change (-10% on popular items)
-- **Nov 1:** New product line launched (premium segment)
-- **Nov 24-27:** Black Friday/Cyber Monday surge
-
-**Analysis:** Revenue growth accelerated after new product launch (Nov),
-suggesting demand for premium options. Pricing change impact unclear due to
-seasonal overlap.
+plt.simple_bar(segments, revenue, title='Revenue by Customer Segment')
+plt.xlabel('Segment')
+plt.ylabel('Revenue ($)')
+plt.show()
 ```
 
+**See terminal-formats.md Format 2 for complete bar chart examples.**
+
+### Pattern 4: Time Series with Annotations
+
+**⚠️ Use plotext or asciichartpy - DO NOT create manually**
+
+```python
+import plotext as plt
+
+months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+revenue = [1.0, 1.1, 1.2, 1.3, 1.4, 1.5,
+           1.5, 1.6, 1.7, 1.7, 1.9, 2.0]  # Revenue in millions
+
+plt.plot(months, revenue)
+plt.title('Monthly Revenue Trend with Key Events')
+plt.xlabel('Month')
+plt.ylabel('Revenue ($M)')
+plt.show()
+
+print("\nKey Events:")
+print("- Oct 1: Q4 begins, seasonal uptick expected")
+print("- Oct 15: Pricing change (-10% on popular items)")
+print("- Nov 1: New product line launched (premium segment)")
+print("- Nov 24-27: Black Friday/Cyber Monday surge")
+print("\nAnalysis: Revenue growth accelerated after new product launch (Nov),")
+print("suggesting demand for premium options. Pricing change impact unclear due to")
+print("seasonal overlap.")
+```
+
+**See terminal-formats.md Format 8 for complete line plot examples.**
+
 ### Pattern 5: Funnel Analysis
+
+**✅ Tables for exact values, use plotext for visualization**
 
 ```markdown
 ## Purchase Funnel Conversion Rates
 
-Step                     Count      Conversion    Drop-off
-────────────────────────────────────────────────────────────
-1. Site Visitors        100,000         100.0%        —
-                           ↓
-2. Product Viewers       45,000          45.0%     55.0% ← High bounce rate
-                           ↓
-3. Add to Cart           12,000          26.7%     73.3%
-                           ↓
-4. Begin Checkout         8,500          70.8%     29.2% ← Cart abandonment
-                           ↓
-5. Complete Purchase      3,200          37.6%     62.4% ← Payment issues?
-────────────────────────────────────────────────────────────
-**Overall Conversion:**   3.2%
+| Step              | Count   | Conversion | Drop-off | Notes |
+|:------------------|--------:|-----------:|---------:|:------|
+| 1. Site Visitors  | 100,000 |     100.0% |        — |       |
+| 2. Product Viewers|  45,000 |      45.0% |    55.0% | High bounce rate |
+| 3. Add to Cart    |  12,000 |      26.7% |    73.3% |       |
+| 4. Begin Checkout |   8,500 |      70.8% |    29.2% | Cart abandonment |
+| 5. Complete       |   3,200 |      37.6% |    62.4% | Payment issues? |
 
-**Visualization:**
-Visitors    [████████████████████████████████████] 100,000
-Viewers     [██████████████████]                    45,000
-Cart        [█████]                                 12,000
-Checkout    [███]                                    8,500
-Purchase    [█]                                      3,200
+**Overall Conversion:** 3.2%
 
 **Problem areas:**
 1. **Bounce rate (55%):** Half of visitors leave without viewing products
@@ -820,6 +557,21 @@ Purchase    [█]                                      3,200
 
 **Quick win:** Fixing checkout issues could 2.6x conversion (3.2% → 8.4%)
 ```
+
+**For funnel visualization, use plotext:**
+```python
+import plotext as plt
+
+steps = ['Visitors', 'Viewers', 'Cart', 'Checkout', 'Purchase']
+counts = [100000, 45000, 12000, 8500, 3200]
+
+plt.simple_bar(steps, counts, title='Purchase Funnel')
+plt.xlabel('Funnel Step')
+plt.ylabel('Count')
+plt.show()
+```
+
+**See terminal-formats.md Format 2 for complete bar chart examples.**
 
 ---
 
@@ -862,45 +614,6 @@ effectively communicated and actionable.
 - Visualization reveals pattern, table provides detail
 - Different audiences (executive summary + appendix)
 - Building progressive disclosure (overview → detail)
-
----
-
-## Text-Based Visualization Tools
-
-While DataPeeker uses manual markdown visualization, these tools can help
-generate visualizations from data:
-
-**For Python users:**
-```python
-# ASCII histogram
-from ascii_graph import Pyasciigraph
-graph = Pyasciigraph()
-data = [('Cat A', 345), ('Cat B', 298), ('Cat C', 234)]
-for line in graph.graph('Sales by Category', data):
-    print(line)
-
-# Terminal tables
-from tabulate import tabulate
-data = [['Electronics', 1523, 345678], ['Home', 2341, 298432]]
-print(tabulate(data, headers=['Category', 'Orders', 'Revenue'],
-               tablefmt='pipe', numalign='right'))
-```
-
-**For direct SQL output:**
-```sql
--- Generate simple text bars in SQL
-SELECT
-  category,
-  revenue,
-  REPEAT('█', CAST(revenue / 10000 AS INTEGER)) as bar
-FROM category_sales
-ORDER BY revenue DESC;
-```
-
-**For manual creation:**
-- Use spreadsheet to calculate bar lengths
-- Copy formatted tables from SQL tools
-- Verify alignment in markdown preview before committing
 
 ---
 
