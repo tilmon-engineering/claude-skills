@@ -1,0 +1,7 @@
+.obsidian/**
+data/**
+**/__pycache__
+analysis/**/*.md
+!analysis/_template/**
+!**/.gitkeep
+.worktrees/
