@@ -49,6 +49,11 @@ Raw CSV Files → [importing-data] → raw_* tables → [cleaning-data] → clea
 - **Capabilities**: Schema inspection, distributions, relationships, quality checks
 - **Location**: `.claude/skills/understanding-data/SKILL.md`
 
+**`detect-foreign-keys`** - Identify and validate foreign key relationships between tables
+- **When to use**: Multiple tables with undocumented relationships, validating referential integrity
+- **Capabilities**: FK candidate identification, value overlap analysis, cardinality assessment, orphaned record detection
+- **Location**: `.claude/skills/detect-foreign-keys/SKILL.md`
+
 **`writing-queries`** - Construct correct, efficient SQL queries
 - **When to use**: Translating analytical questions to SQL
 - **Capabilities**: Query patterns, optimization, common pitfalls
@@ -137,6 +142,7 @@ DataPeeker uses specialized sub-agents to prevent context pollution during data 
 - `detect-near-duplicates` - Fuzzy matching for similar records
 - `detect-outliers` - MAD-based statistical outlier detection
 - `categorize-free-text` - Semantic grouping of free text values
+- `detect-foreign-keys` - Identify foreign key relationships and validate referential integrity
 
 **Location**: `.claude/agents/[agent-name].md`
 
@@ -147,6 +153,61 @@ DataPeeker uses specialized sub-agents to prevent context pollution during data 
 3. **Intellectual Honesty**: Interpret results skeptically, acknowledge limitations
 4. **Reproducibility**: Others should be able to follow your exact analytical path
 5. **Context Management**: Use sub-agents for data operations, keep main context analytical
+
+## Skill Development Guidelines
+
+### Template Organization
+
+**CRITICAL**: Never embed full markdown templates inline within skill files.
+
+**Why this matters:**
+- Nested markdown templates create unreadable skill documentation
+- Inline templates make skills difficult to maintain and update
+- Large embedded templates obscure the skill's actual workflow logic
+- Template changes require editing massive skill files instead of focused template files
+
+**Best Practice:**
+
+✅ **DO**: Create separate template files in a `templates/` directory
+```markdown
+Create `analysis/[session-name]/01-filename.md` with: ./templates/phase-1.md
+```
+
+**Directory structure:**
+```
+.claude/skills/[skill-name]/
+├── SKILL.md
+└── templates/
+    ├── phase-1.md
+    ├── phase-2.md
+    └── phase-3.md
+```
+
+❌ **DON'T**: Embed full file templates inline
+```markdown
+Create `analysis/[session-name]/01-filename.md`:
+
+```markdown
+# Long Template Content
+[50+ lines of template markdown]
+```
+```
+
+**When inline snippets are acceptable:**
+- Very short examples (< 5 lines)
+- Code snippets demonstrating syntax
+- Brief format examples
+
+**When separate template files are required:**
+- Any template describing the full contents of a file to be written
+- Templates with > 10 lines of content
+- Templates that will be referenced by multiple skills
+- Templates that define documentation structure
+
+**Example from DataPeeker:**
+- All component skills (importing-data, cleaning-data) use separate template files
+- All process skills (exploratory-analysis, guided-investigation, hypothesis-testing, comparative-analysis) use separate template files
+- This pattern reduced some skill files by up to 71%, making them dramatically more readable
 
 ## Common Anti-Patterns
 
