@@ -295,3 +295,263 @@ analysis/marketing-experimentation/[campaign-name]/
 
 **Common Rationalization:** "More hypotheses = better coverage, I'll generate 20+"
 **Reality:** Too many hypotheses dilute focus and create analysis paralysis in prioritization. 5-10 high-quality hypotheses enable strategic selection of 2-4 tests.
+
+---
+
+## Phase 3: Prioritization
+
+**CHECKPOINT:** Before proceeding, you MUST have:
+- [ ] Scored all hypotheses using ICE or RICE framework with computational method
+- [ ] Created prioritized backlog (highest to lowest score) using Python script
+- [ ] Selected 2-4 highest-priority hypotheses for testing
+- [ ] Documented prioritization rationale
+- [ ] Identified any dependencies or sequencing requirements
+- [ ] Saved to `03-prioritization.md`
+
+### Instructions
+
+**CRITICAL:** You MUST use computational methods (Python scripts) to calculate scores. Do NOT estimate or manually calculate scores.
+
+1. **Choose prioritization framework**
+
+   **ICE Framework** (simpler, faster):
+   - **Impact:** How much will this move the success metric? (1-10 scale)
+   - **Confidence:** How confident are we this will work? (1-10 scale)
+   - **Ease:** How easy is this to implement? (1-10 scale)
+   - **Score:** (Impact × Confidence) / Ease
+
+   **RICE Framework** (more comprehensive):
+   - **Reach:** How many users will this affect? (absolute number or percentage)
+   - **Impact:** How much will this move the metric per user? (1-10 scale: 0.25=minimal, 3=massive)
+   - **Confidence:** How confident are we in our estimates? (percentage: 50%, 80%, 100%)
+   - **Effort:** Person-weeks to implement (absolute number)
+   - **Score:** (Reach × Impact × Confidence) / Effort
+
+   Choose ICE for speed, RICE for precision when reach varies significantly.
+
+2. **Score each hypothesis using Python script**
+
+   **For ICE Framework:**
+
+   Create a Python script to compute and sort ICE scores:
+
+   ```python
+   #!/usr/bin/env python3
+   """
+   ICE Score Calculator for Marketing Experimentation
+
+   Computes ICE scores: (Impact × Confidence) / Ease
+   Sorts hypotheses by score (highest to lowest)
+   """
+
+   hypotheses = [
+       {
+           "id": "H1",
+           "name": "Value proposition clarity drives conversion",
+           "impact": 8,
+           "confidence": 7,
+           "ease": 9
+       },
+       {
+           "id": "H2",
+           "name": "Ad targeting refinement",
+           "impact": 7,
+           "confidence": 6,
+           "ease": 5
+       },
+       {
+           "id": "H3",
+           "name": "Email sequence optimization",
+           "impact": 6,
+           "confidence": 8,
+           "ease": 8
+       },
+       {
+           "id": "H4",
+           "name": "Content marketing expansion",
+           "impact": 5,
+           "confidence": 4,
+           "ease": 3
+       },
+   ]
+
+   # Calculate ICE scores
+   for h in hypotheses:
+       h['ice_score'] = (h['impact'] * h['confidence']) / h['ease']
+
+   # Sort by ICE score (descending)
+   sorted_hypotheses = sorted(hypotheses, key=lambda x: x['ice_score'], reverse=True)
+
+   # Print results table
+   print("| Hypothesis | Impact | Confidence | Ease | ICE Score | Rank |")
+   print("|------------|--------|------------|------|-----------|------|")
+   for rank, h in enumerate(sorted_hypotheses, 1):
+       print(f"| {h['id']}: {h['name'][:30]} | {h['impact']} | {h['confidence']} | {h['ease']} | {h['ice_score']:.2f} | {rank} |")
+   ```
+
+   **Usage:**
+   ```bash
+   python3 ice_calculator.py
+   ```
+
+   **For RICE Framework:**
+
+   Create a Python script to compute and sort RICE scores:
+
+   ```python
+   #!/usr/bin/env python3
+   """
+   RICE Score Calculator for Marketing Experimentation
+
+   Computes RICE scores: (Reach × Impact × Confidence) / Effort
+   Sorts hypotheses by score (highest to lowest)
+   """
+
+   hypotheses = [
+       {
+           "id": "H1",
+           "name": "Value proposition clarity drives conversion",
+           "reach": 10000,        # users affected
+           "impact": 3,           # 0.25=minimal, 1=low, 2=medium, 3=high, 5=massive
+           "confidence": 80,      # percentage (50, 80, 100)
+           "effort": 2            # person-weeks
+       },
+       {
+           "id": "H2",
+           "name": "Ad targeting refinement",
+           "reach": 50000,
+           "impact": 1,
+           "confidence": 50,
+           "effort": 4
+       },
+       {
+           "id": "H3",
+           "name": "Email sequence optimization",
+           "reach": 5000,
+           "impact": 2,
+           "confidence": 80,
+           "effort": 3
+       },
+       {
+           "id": "H4",
+           "name": "Content marketing expansion",
+           "reach": 20000,
+           "impact": 1,
+           "confidence": 50,
+           "effort": 8
+       },
+   ]
+
+   # Calculate RICE scores
+   for h in hypotheses:
+       # Convert confidence percentage to decimal
+       confidence_decimal = h['confidence'] / 100
+       h['rice_score'] = (h['reach'] * h['impact'] * confidence_decimal) / h['effort']
+
+   # Sort by RICE score (descending)
+   sorted_hypotheses = sorted(hypotheses, key=lambda x: x['rice_score'], reverse=True)
+
+   # Print results table
+   print("| Hypothesis | Reach | Impact | Confidence | Effort | RICE Score | Rank |")
+   print("|------------|-------|--------|------------|--------|------------|------|")
+   for rank, h in enumerate(sorted_hypotheses, 1):
+       print(f"| {h['id']}: {h['name'][:30]} | {h['reach']} | {h['impact']} | {h['confidence']}% | {h['effort']}w | {h['rice_score']:.2f} | {rank} |")
+   ```
+
+   **Usage:**
+   ```bash
+   python3 rice_calculator.py
+   ```
+
+   **Scoring Guidance:**
+
+   **Impact (1-10 for ICE, 0.25-5 for RICE):**
+   - ICE: 1-3 minimal, 4-6 moderate, 7-8 significant, 9-10 transformative
+   - RICE: 0.25 minimal, 1 low, 2 medium, 3 high, 5 massive
+
+   **Confidence (1-10 for ICE, 50-100% for RICE):**
+   - ICE: 1-3 speculative, 4-6 uncertain, 7-8 likely, 9-10 validated
+   - RICE: 50% low confidence, 80% high confidence, 100% certainty
+
+   **Ease (1-10 for ICE):**
+   - 1-3: Complex, significant resources
+   - 4-6: Moderate effort, some obstacles
+   - 7-8: Straightforward, few dependencies
+   - 9-10: Trivial, immediate execution
+
+   **Effort (person-weeks for RICE):**
+   - Estimate total person-weeks required
+   - Include design, implementation, monitoring time
+   - Examples: 1w (simple landing page), 4w (complex ad campaign), 8w (content series)
+
+3. **Run scoring script and document results**
+
+   1. Create the Python script (ice_calculator.py or rice_calculator.py)
+   2. Update the `hypotheses` list with actual hypothesis data from Phase 2
+   3. Run the script: `python3 [ice|rice]_calculator.py`
+   4. Copy the output table into `03-prioritization.md`
+   5. Include the script in the markdown file for reproducibility:
+
+   ```markdown
+   ## Prioritization Calculation
+
+   **Method:** ICE Framework
+
+   **Calculation Script:**
+   ```python
+   [paste full script here]
+   ```
+
+   **Results:**
+
+   [paste output table here]
+   ```
+
+4. **Select 2-4 highest-priority hypotheses**
+
+   Considerations for selection:
+   - **Don't test everything:** Focus on highest-scoring 2-4 hypotheses
+   - **Resource constraints:** Match selection to available time/budget/capacity
+   - **Learning value:** Sometimes lower-scoring hypothesis with high uncertainty is worth testing
+   - **Dependencies:** Test prerequisites before dependent hypotheses
+   - **Sequencing:** Consider whether experiments need to run sequentially or can run in parallel
+
+   **Selection criteria:**
+   - Primary: Top 2-4 by ICE/RICE score from computational results
+   - Secondary: Balance quick wins vs. high-impact long-term bets
+   - Tertiary: Ensure tactic diversity (don't test 3 ad variants if other tactics untested)
+
+5. **Document experiment sequence**
+
+   Determine execution strategy:
+   - **Parallel:** Multiple experiments running simultaneously (faster results, higher resource needs)
+   - **Sequential:** One experiment at a time (slower, easier to manage)
+   - **Hybrid:** Run independent experiments in parallel, sequence dependent ones
+
+   **Example sequence plan:**
+   ```
+   Week 1-2: Launch H1 (landing page) and H3 (email) in parallel
+   Week 3-4: Analyze H1 and H3 results
+   Week 5-6: Launch H2 (ads) based on H1 learnings
+   Week 7-8: Analyze H2 results
+   ```
+
+6. **Create `03-prioritization.md`** with: `./templates/03-prioritization.md`
+
+7. **STOP and get user confirmation**
+   - Review computed scores and prioritization with user
+   - Confirm selected hypotheses are appropriate
+   - Confirm experiment sequence is feasible
+   - Do NOT proceed to Phase 4 until confirmed
+
+**Common Rationalization:** "I'll test all hypotheses - don't want to miss opportunities"
+**Reality:** Resource constraints make testing everything impossible. Prioritization ensures highest-value experiments get resources. Unfocused testing produces weak signals across too many fronts.
+
+**Common Rationalization:** "Scoring is subjective and arbitrary - I'll just pick what feels right"
+**Reality:** Scoring frameworks force explicit reasoning about trade-offs. "Feels right" selections optimize for recency bias and personal preference, not business value. Computational methods ensure consistency.
+
+**Common Rationalization:** "I'll skip prioritization and go straight to easiest test"
+**Reality:** Easiest test rarely equals highest value. Prioritization prevents optimizing for ease at the expense of impact.
+
+**Common Rationalization:** "I'll estimate scores mentally instead of running the script"
+**Reality:** Manual estimation introduces calculation errors and inconsistency. Python scripts ensure exact, reproducible results that can be audited and verified.
