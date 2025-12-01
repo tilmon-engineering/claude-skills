@@ -200,3 +200,98 @@ analysis/marketing-experimentation/[campaign-name]/
 
 **Common Rationalization:** "Asset inventory is busywork - I'll figure out what's available as I go"
 **Reality:** Existing assets can dramatically reduce experiment cost and time. Inventorying first prevents reinventing wheels and enables building on proven foundations.
+
+---
+
+## Phase 2: Hypothesis Generation
+
+**CHECKPOINT:** Before proceeding, you MUST have:
+- [ ] Generated 5-10 testable hypotheses from the concept
+- [ ] Each hypothesis maps to a specific tactic/channel
+- [ ] Each hypothesis has expected outcome and rationale
+- [ ] Hypotheses cover multiple tactics (not all ads or all email)
+- [ ] Referenced relevant frameworks (Lean Startup, AARRR, ICE/RICE)
+- [ ] Saved to `02-hypothesis-generation.md`
+
+### Instructions
+
+1. **Generate 5-10 testable hypotheses**
+
+   For each hypothesis, use this format:
+
+   **Hypothesis [N]: [Brief statement]**
+   - **Tactic/Channel:** [landing page | ad campaign | email sequence | content marketing | social media | SEO | etc.]
+   - **Expected Outcome:** [Specific, measurable result]
+   - **Rationale:** [Why we believe this will work based on discovery findings]
+   - **Variables to Test:** [What will we manipulate/measure]
+
+   **Example hypothesis:**
+
+   **Hypothesis 1: Value proposition clarity drives conversion**
+   - **Tactic/Channel:** Landing page A/B test
+   - **Expected Outcome:** 15%+ increase in conversion rate from landing page variant with simplified value proposition
+   - **Rationale:** Market research showed audience confusion about product benefits. Discovery found existing landing page has 8 different value propositions competing for attention.
+   - **Variables to Test:** Headline clarity, benefit hierarchy, CTA prominence
+
+2. **Ensure tactic coverage**
+
+   Verify hypotheses cover multiple marketing tactics:
+
+   **Acquisition Tactics:**
+   - Landing pages (conversion optimization, value prop testing, layout)
+   - Ad campaigns (targeting, creative, messaging, platforms)
+   - Content marketing (blog posts, videos, webinars, lead magnets)
+   - SEO (keyword targeting, content optimization, technical SEO)
+
+   **Activation Tactics:**
+   - Email sequences (onboarding, nurture, activation)
+   - Product tours (in-app guidance, feature discovery)
+   - Social proof (testimonials, case studies, reviews)
+
+   **Retention Tactics:**
+   - Email campaigns (engagement, re-activation, upsell)
+   - Content (newsletters, educational content, community)
+
+   Don't generate 10 ad hypotheses. Aim for diversity across tactics.
+
+3. **Reference experimentation frameworks**
+
+   **Lean Startup Build-Measure-Learn:**
+   - Build: What's the minimum viable test? (landing page, ad, email, etc.)
+   - Measure: What metrics indicate success/failure?
+   - Learn: What will we learn regardless of outcome?
+
+   **AARRR Pirate Metrics:**
+   - Acquisition: How do users find us?
+   - Activation: Do they have a great first experience?
+   - Retention: Do they come back?
+   - Referral: Do they tell others?
+   - Revenue: Do they pay?
+
+   Map each hypothesis to one or more AARRR stages.
+
+   **ICE/RICE Prioritization (used in Phase 3):**
+   - Impact: How much will this move the metric?
+   - Confidence: How sure are we this will work?
+   - Ease: How easy is this to implement?
+   - Reach: How many users will this affect? (RICE only)
+
+4. **Create `02-hypothesis-generation.md`** with: `./templates/02-hypothesis-generation.md`
+
+5. **STOP and get user confirmation**
+   - Review all hypotheses with user
+   - Confirm hypotheses are testable and meaningful
+   - Confirm tactic coverage is appropriate
+   - Do NOT proceed to Phase 3 until confirmed
+
+**Common Rationalization:** "I'll generate hypotheses as I build experiments - more efficient"
+**Reality:** Generating hypotheses before prioritization enables strategic selection of highest-impact tests. Generating ad-hoc leads to testing whatever's easiest, not what matters most.
+
+**Common Rationalization:** "I'll focus all hypotheses on one tactic (ads) since that's what we know"
+**Reality:** Tactic diversity reveals which channels work for this concept. Single-tactic testing creates blind spots and missed opportunities.
+
+**Common Rationalization:** "I'll write vague hypotheses and refine them during experiment design"
+**Reality:** Vague hypotheses lead to vague experiments that produce vague results. Specific hypotheses with expected outcomes enable clear signal detection.
+
+**Common Rationalization:** "More hypotheses = better coverage, I'll generate 20+"
+**Reality:** Too many hypotheses dilute focus and create analysis paralysis in prioritization. 5-10 high-quality hypotheses enable strategic selection of 2-4 tests.
