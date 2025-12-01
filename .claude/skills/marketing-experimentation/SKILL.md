@@ -555,3 +555,145 @@ analysis/marketing-experimentation/[campaign-name]/
 
 **Common Rationalization:** "I'll estimate scores mentally instead of running the script"
 **Reality:** Manual estimation introduces calculation errors and inconsistency. Python scripts ensure exact, reproducible results that can be audited and verified.
+
+---
+
+## Phase 4: Experiment Coordination
+
+**CHECKPOINT:** Before proceeding, you MUST have:
+- [ ] Created experiment tracker with all selected hypotheses
+- [ ] Invoked hypothesis-testing skill for each hypothesis (or documented plan to invoke)
+- [ ] Updated tracker with experiment status (Planned, In Progress, Complete)
+- [ ] Documented location of each hypothesis-testing session
+- [ ] Saved experiment tracker to `04-experiment-tracker.md`
+- [ ] Note: This phase may span multiple days/weeks and conversations
+
+### Instructions
+
+**CRITICAL:** This phase is designed for multi-conversation workflows. The experiment tracker is a LIVING DOCUMENT that you will update throughout experimentation. New conversations should ALWAYS read this file first.
+
+1. **Create experiment tracker**
+
+   The tracker is your coordination hub for managing multiple experiments over time.
+
+   Create `04-experiment-tracker.md` with: `./templates/04-experiment-tracker.md`
+
+   **Tracker format:**
+
+   For each selected hypothesis, create an entry:
+
+   ```markdown
+   ### Experiment 1: [Hypothesis Brief Name]
+
+   **Status:** [Planned | In Progress | Complete]
+   **Hypothesis:** [Full hypothesis statement from Phase 2]
+   **Tactic/Channel:** [landing page | ads | email | etc.]
+   **Priority Score:** [ICE/RICE score from Phase 3]
+   **Start Date:** [YYYY-MM-DD or "Not started"]
+   **Completion Date:** [YYYY-MM-DD or "In progress"]
+   **Location:** `analysis/marketing-experimentation/[campaign-name]/experiments/[experiment-name]/`
+   **Signal:** [Positive | Negative | Null | Mixed | "Not analyzed"]
+   **Key Findings:** [Brief summary when complete, "TBD" otherwise]
+   ```
+
+2. **Invoke hypothesis-testing skill for each experiment**
+
+   For each hypothesis marked "Planned" or "In Progress":
+
+   **Step 1:** Read the hypothesis details from `02-hypothesis-generation.md`
+
+   **Step 2:** Invoke the `hypothesis-testing` skill:
+   ```markdown
+   Use hypothesis-testing skill to test: [Hypothesis statement]
+
+   Context for hypothesis-testing:
+   - Session name: [descriptive-name-for-experiment]
+   - Save location: analysis/marketing-experimentation/[campaign-name]/experiments/[experiment-name]/
+   - Success criteria: [From Phase 1 discovery]
+   - Expected outcome: [From Phase 2 hypothesis]
+   ```
+
+   **Step 3:** Update experiment tracker:
+   - Change status from "Planned" to "In Progress"
+   - Add start date
+   - Update location with actual path
+
+   **Step 4:** Let hypothesis-testing skill complete its 5-phase workflow:
+   - Phase 1: Hypothesis Formulation
+   - Phase 2: Test Design
+   - Phase 3: Data Analysis
+   - Phase 4: Statistical Interpretation
+   - Phase 5: Conclusion
+
+   **Step 5:** When hypothesis-testing completes, update tracker:
+   - Change status to "Complete"
+   - Add completion date
+   - Document signal (Positive/Negative/Null/Mixed)
+   - Summarize key findings
+
+   **Step 6:** Commit tracker updates after each status change
+
+3. **Handle multi-conversation resumption**
+
+   **At the start of EVERY conversation during Phase 4:**
+
+   1. Check if `04-experiment-tracker.md` exists
+   2. If it exists, READ IT FIRST before doing anything else
+   3. Review experiment status:
+      - Planned: Ready to launch
+      - In Progress: Check hypothesis-testing session for current phase
+      - Complete: Ready for synthesis (Phase 5)
+   4. Ask user which experiment to continue or which new experiment to launch
+   5. Update tracker with new status/dates/findings
+   6. Commit tracker updates
+
+   **Example resumption:**
+   ```markdown
+   I've read the experiment tracker. Current status:
+   - Experiment 1 (H1: Value prop): Complete, Positive signal
+   - Experiment 2 (H3: Email sequence): In Progress, currently in hypothesis-testing Phase 3
+   - Experiment 3 (H2: Ad targeting): Planned, not yet started
+
+   What would you like to do?
+   a) Continue Experiment 2 (in hypothesis-testing Phase 3)
+   b) Start Experiment 3
+   c) Move to synthesis (Phase 5) since Experiment 1 is complete
+   ```
+
+4. **Coordinate parallel vs. sequential experiments**
+
+   **Parallel execution (multiple experiments simultaneously):**
+   - Launch multiple hypothesis-testing sessions
+   - Track each separately in experiment tracker
+   - Update tracker as each progresses independently
+   - Requires managing multiple analysis directories
+
+   **Sequential execution (one at a time):**
+   - Complete one experiment fully before starting next
+   - Simpler tracking, easier to manage
+   - Can incorporate learnings between experiments
+
+   **Hybrid execution:**
+   - Run independent experiments in parallel
+   - Sequence dependent experiments (e.g., H2 depends on H1 insights)
+
+5. **Progress through all experiments**
+
+   Continue invoking hypothesis-testing and updating the tracker until:
+   - All selected experiments have status "Complete"
+   - All experiments have documented signals
+   - All findings are summarized in tracker
+
+   Only when ALL experiments are complete should you proceed to Phase 5.
+
+**Common Rationalization:** "I'll keep experiment details in my head - the tracker is just busywork"
+**Reality:** Multi-day campaigns lose context between conversations. The tracker is the ONLY source of truth that persists across sessions. Without it, you'll re-ask questions and lose progress.
+
+**Common Rationalization:** "I'll wait until all experiments finish before updating the tracker"
+**Reality:** Batch updates create opportunity for lost data. Update the tracker IMMEDIATELY after status changes. Real-time tracking prevents confusion and missed experiments.
+
+**Common Rationalization:** "I'll design the experiment myself instead of using hypothesis-testing"
+**Reality:** hypothesis-testing skill provides rigorous experimental design, statistical analysis, and signal detection. Skipping it produces weak experiments with ambiguous results.
+
+**Common Rationalization:** "All experiments are done, I don't need to update the tracker before synthesis"
+**Reality:** The tracker is your input to Phase 5. Incomplete tracker means incomplete synthesis. Update ALL fields (status, dates, signals, findings) before proceeding.
