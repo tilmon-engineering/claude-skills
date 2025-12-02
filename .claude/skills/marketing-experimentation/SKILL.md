@@ -849,3 +849,149 @@ analysis/marketing-experimentation/[campaign-name]/
 
 **Common Rationalization:** "Visualization is optional - the data speaks for itself"
 **Reality:** Tabular data obscures patterns. Visualization reveals signal distribution, effect size clusters, and confidence patterns that inform strategic decisions. presenting-data handles this systematically.
+
+---
+
+## Phase 6: Iteration Planning
+
+**CHECKPOINT:** Before proceeding, you MUST have:
+- [ ] Generated 3-7 new experiment ideas based on synthesis findings
+- [ ] Categorized ideas (scale winners, investigate nulls, pivot from failures, explore new)
+- [ ] Documented campaign-level signal and strategic recommendation
+- [ ] Explained feed-forward pattern (ideas → new marketing-experimentation sessions)
+- [ ] Saved to `06-iteration-plan.md`
+- [ ] Campaign complete - ready for next cycle or conclusion
+
+### Instructions
+
+**CRITICAL:** Phase 6 generates experiment IDEAS, NOT hypotheses. Ideas feed into new marketing-experimentation sessions where Phase 2 formalizes hypotheses. Do NOT skip the discovery and hypothesis generation steps.
+
+1. **Generate 3-7 new experiment ideas**
+
+   Based on Phase 5 synthesis, generate ideas for next iteration:
+
+   **Idea Format:**
+
+   **Idea [N]: [Brief descriptive name]**
+   - **Rationale:** [Why this idea based on current findings]
+   - **Expected Learning:** [What we'll learn from testing this]
+   - **Category:** [Scale Winners | Investigate Nulls | Pivot from Failures | Explore New]
+
+   **Example Ideas:**
+
+   **Idea 1: Scale value prop landing page to paid ads**
+   - **Rationale:** E1 showed +18% conversion from simplified value prop. Apply winning message to ad creative.
+   - **Expected Learning:** Does simplified value prop improve ad CTR and cost-per-conversion?
+   - **Category:** Scale Winners
+
+   **Idea 2: Investigate email sequence timing sensitivity**
+   - **Rationale:** E3 showed negative result for email sequence, but timing may be a confound (sent during holidays).
+   - **Expected Learning:** Is the email sequence inherently weak, or was timing the issue?
+   - **Category:** Investigate Nulls
+
+   **Idea 3: Pivot from broad ad targeting to lookalike audiences**
+   - **Rationale:** E2 showed null result for ad targeting. Broad targeting may dilute signal. Pivot to lookalike audiences based on E1 converters.
+   - **Expected Learning:** Do lookalike audiences outperform broad targeting?
+   - **Category:** Pivot from Failures
+
+2. **Categorize ideas by strategy**
+
+   **Scale Winners:**
+   - Double down on successful tactics
+   - Apply winning patterns to new channels
+   - Increase budget/effort on validated approaches
+   - Examples: Winning landing page → ads, winning ad → email, winning message → content
+
+   **Investigate Nulls:**
+   - Redesign experiments with null/mixed results
+   - Address confounding factors identified in synthesis
+   - Increase statistical power (larger sample, longer duration)
+   - Examples: Retest with better timing, retest with clearer treatment, retest with focused audience
+
+   **Pivot from Failures:**
+   - Abandon unsuccessful approaches
+   - Try alternative tactics for same goal
+   - Apply learnings to avoid similar failures
+   - Examples: Broad targeting failed → try lookalike, generic message failed → try personalization
+
+   **Explore New:**
+   - Test entirely new tactics not in original hypothesis set
+   - Investigate new audience segments
+   - Explore new channels or platforms
+   - Examples: Add referral program, test new platform, try new content format
+
+3. **Document campaign-level signal and strategic recommendation**
+
+   **Campaign Summary:**
+   - **Overall Signal:** [Positive | Negative | Null | Mixed]
+   - **Key Wins:** [List successful tactics]
+   - **Key Learnings:** [List insights regardless of signal]
+   - **Strategic Recommendation:** [What to do next]
+
+   **Strategic Recommendations by Signal:**
+
+   **Positive Signal:**
+   - Proceed to scaling: Increase budget/effort on winning tactics
+   - Optimize: Refine winning approaches for incremental gains
+   - Expand: Apply winning patterns to new channels/audiences
+
+   **Negative Signal:**
+   - Pivot: Major change in approach, audience, or value proposition
+   - Pause: Reassess concept before additional investment
+   - Abandon: Consider alternative concepts if no viable path forward
+
+   **Null Signal:**
+   - Refine: Redesign experiments with better power/clarity
+   - Investigate: Address confounding factors before new tests
+   - Extend: Continue observation period if time-dependent
+
+   **Mixed Signal:**
+   - Selective scaling: Double down on winners
+   - Selective pivots: Abandon or redesign losers
+   - Strategic iteration: Focus next tests on promising areas
+
+4. **Explain feed-forward pattern**
+
+   **CRITICAL:** Ideas from Phase 6 are NOT ready for testing. They MUST go through a new marketing-experimentation session:
+
+   **Feed-Forward Cycle:**
+   ```
+   Phase 6 generates IDEAS
+          ↓
+   Start new marketing-experimentation session with idea
+          ↓
+   Phase 1: Discovery (validate idea with market-researcher)
+          ↓
+   Phase 2: Hypothesis Generation (formalize idea into testable hypotheses)
+          ↓
+   Phase 3-6: Complete full experimental cycle
+   ```
+
+   **Why this matters:**
+   - Ideas need market validation (Phase 1) before testing
+   - Ideas need formalization into specific hypotheses (Phase 2)
+   - Skipping discovery leads to untested assumptions
+   - Skipping hypothesis generation leads to vague experiments
+
+   **Example:**
+   Phase 6 generates "Scale value prop to ads" (idea)
+   → New session Phase 1: Market research on ad platform best practices
+   → New session Phase 2: Generate hypotheses like "H1: Simplified value prop in ad headline increases CTR by 10%+" (specific, testable)
+   → Continue with Phase 3-6 to test formal hypotheses
+
+5. **Create `06-iteration-plan.md`** with: `./templates/06-iteration-plan.md`
+
+6. **STOP and review with user**
+   - Review all iteration ideas with user
+   - Confirm strategic recommendation is appropriate
+   - Confirm understanding of feed-forward cycle
+   - Discuss whether to start new marketing-experimentation session or conclude campaign
+
+**Common Rationalization:** "I'll turn ideas directly into experiments - skip the new session"
+**Reality:** Ideas need discovery and hypothesis generation. Skipping these steps leads to untested assumptions and vague experiments. Always run ideas through a new marketing-experimentation session.
+
+**Common Rationalization:** "I'll generate hypotheses in Phase 6 for efficiency"
+**Reality:** Phase 6 generates IDEAS, Phase 2 (in a new session) generates hypotheses. Conflating these skips critical validation and formalization steps. Ideas → new session → hypotheses.
+
+**Common Rationalization:** "Campaign signal is obvious from results, no need to document strategic recommendation"
+**Reality:** Documented recommendation provides clear guidance for stakeholders and future sessions. Without it, insights are lost and decisions become ad-hoc.
