@@ -697,3 +697,155 @@ analysis/marketing-experimentation/[campaign-name]/
 
 **Common Rationalization:** "All experiments are done, I don't need to update the tracker before synthesis"
 **Reality:** The tracker is your input to Phase 5. Incomplete tracker means incomplete synthesis. Update ALL fields (status, dates, signals, findings) before proceeding.
+
+---
+
+## Phase 5: Cross-Experiment Synthesis
+
+**CHECKPOINT:** Before proceeding, you MUST have:
+- [ ] ALL experiments from Phase 4 marked "Complete" with signals documented
+- [ ] Created aggregate results table across all experiments
+- [ ] Invoked presenting-data skill to synthesize findings with visualizations
+- [ ] Documented what worked, what didn't, and what's unclear
+- [ ] Classified overall campaign signal (Positive/Negative/Null/Mixed)
+- [ ] Saved to `05-synthesis.md`
+
+### Instructions
+
+**CRITICAL:** This phase synthesizes results ACROSS multiple experiments. Do NOT proceed until ALL Phase 4 experiments are complete with documented signals.
+
+1. **Verify experiment completion**
+
+   Read `04-experiment-tracker.md` and verify:
+   - All experiments have Status = "Complete"
+   - All experiments have Signal documented (Positive/Negative/Null/Mixed)
+   - All experiments have Key Findings summarized
+
+   If any experiments are incomplete, return to Phase 4 to finish them.
+
+2. **Create aggregate results table**
+
+   Compile findings from all experiments into a summary table:
+
+   **Example Aggregate Table:**
+
+   | Experiment | Hypothesis | Tactic | Signal | Key Metric | Result | Confidence |
+   |------------|------------|--------|--------|------------|--------|------------|
+   | E1 | Value prop clarity | Landing page | Positive | Conversion rate | +18% | High |
+   | E2 | Ad targeting | Ads | Null | CTR | +2% (not sig.) | Medium |
+   | E3 | Email sequence | Email | Negative | Open rate | -5% | High |
+
+   Include:
+   - Signal classification from hypothesis-testing
+   - Key metric measured
+   - Magnitude of effect (with significance)
+   - Confidence level from statistical analysis
+
+3. **Invoke presenting-data skill for comprehensive synthesis**
+
+   Use the `presenting-data` skill to create complete synthesis with visualizations and presentation materials:
+
+   ```markdown
+   Use presenting-data skill to synthesize marketing experimentation results:
+
+   Context:
+   - Campaign: [campaign name]
+   - Experiments completed: [count]
+   - Results table: [paste aggregate table]
+   - Audience: [stakeholders/decision-makers]
+   - Format: [markdown report | slides | whitepaper]
+   - Focus: Pattern identification across experiments (what works, what doesn't, what's unclear)
+   ```
+
+   **presenting-data skill will handle:**
+   - Pattern identification (using interpreting-results internally)
+   - Visualization creation (using creating-visualizations internally)
+   - Synthesis documentation (markdown, slides, or whitepaper format)
+   - Citation of sources (individual hypothesis-testing sessions)
+   - Reproducibility (references to experiment locations)
+
+   **Focus areas for synthesis:**
+   - **What worked:** Experiments with Positive signals
+   - **What didn't work:** Experiments with Negative signals
+   - **What's unclear:** Experiments with Null or Mixed signals
+   - **Cross-experiment patterns:** Do results cluster by tactic? By audience? By timing?
+   - **Confounding factors:** Are there external factors affecting multiple experiments?
+   - **Confidence assessment:** Which findings are robust? Which are uncertain?
+
+4. **Document patterns and insights**
+
+   The presenting-data skill will create `05-synthesis.md` (or slides/whitepaper) with:
+
+   **What Worked (Positive Signals):**
+   - List experiments with positive results
+   - Explain WHY these worked (based on analysis)
+   - Identify commonalities across successful experiments
+
+   **What Didn't Work (Negative Signals):**
+   - List experiments with negative results
+   - Explain WHY these failed (based on analysis)
+   - Identify lessons learned
+
+   **What's Unclear (Null/Mixed Signals):**
+   - List experiments with inconclusive results
+   - Explain potential reasons (insufficient power, confounding factors, etc.)
+   - Identify what additional investigation is needed
+
+   **Cross-Experiment Patterns:**
+   - Do results cluster by tactic, audience, timing, or other factors?
+   - Are there confounding variables affecting multiple experiments?
+   - What overarching insights emerge?
+
+   **Visualizations (created by presenting-data):**
+   - Signal distribution (bar chart: Positive/Negative/Null/Mixed counts)
+   - Effect sizes (bar chart: metric changes by experiment)
+   - Confidence levels (scatter plot: effect size vs. confidence)
+   - Tactic performance (grouped by channel/tactic)
+
+5. **Classify overall campaign signal**
+
+   Based on aggregate analysis (from presenting-data output), classify the campaign:
+
+   **Positive:** Campaign validates concept, proceed to scaling
+   - Multiple experiments show positive signals
+   - Successful tactics identified for scale-up
+   - Clear path to ROI improvement
+
+   **Negative:** Campaign invalidates concept, pivot or abandon
+   - Multiple experiments show negative signals
+   - No successful tactics identified
+   - Concept doesn't resonate with audience
+
+   **Null:** Campaign results inconclusive, needs refinement
+   - Most experiments show null signals
+   - Insufficient power or confounding factors
+   - Needs redesigned experiments or longer observation
+
+   **Mixed:** Some aspects work, some don't, iterate strategically
+   - Mix of positive and negative signals across experiments
+   - Some tactics work, others don't
+   - Selective scaling + pivots needed
+
+6. **Review presenting-data output and finalize synthesis**
+
+   After presenting-data skill completes:
+   - Review generated synthesis document
+   - Verify all experiments are covered
+   - Confirm visualizations are appropriate
+   - Ensure signal classification is documented
+   - Make any necessary edits for clarity
+
+7. **STOP and get user confirmation**
+   - Review synthesis findings with user
+   - Confirm pattern interpretations are accurate
+   - Confirm overall signal classification is appropriate
+   - Do NOT proceed to Phase 6 until confirmed
+
+**Common Rationalization:** "I'll synthesize results mentally - no need to document patterns"
+**Reality:** Mental synthesis loses details and creates false confidence. Documented synthesis with presenting-data skill ensures intellectual honesty and identifies confounding factors you'd otherwise miss.
+
+**Common Rationalization:** "I'll skip synthesis for experiments with clear signals"
+**Reality:** Individual experiment signals don't reveal cross-experiment patterns. Synthesis identifies why some tactics work while others don't - the strategic insight that guides iteration.
+
+**Common Rationalization:** "Visualization is optional - the data speaks for itself"
+**Reality:** Tabular data obscures patterns. Visualization reveals signal distribution, effect size clusters, and confidence patterns that inform strategic decisions. presenting-data handles this systematically.
