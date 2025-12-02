@@ -995,3 +995,125 @@ analysis/marketing-experimentation/[campaign-name]/
 
 **Common Rationalization:** "Campaign signal is obvious from results, no need to document strategic recommendation"
 **Reality:** Documented recommendation provides clear guidance for stakeholders and future sessions. Without it, insights are lost and decisions become ad-hoc.
+
+---
+
+## Common Rationalizations
+
+These are rationalizations that lead to failure. When you catch yourself thinking any of these, STOP and follow the skill process instead.
+
+### "I'll skip discovery and just start testing - the concept is obvious"
+
+**Why this fails:** Discovery surfaces assumptions, constraints, and existing assets that dramatically affect experiment design. "Obvious" concepts often hide critical assumptions that need validation.
+
+**Reality:** Market-researcher agent provides current, data-driven validation signals. Asset inventory reveals resources that reduce experiment cost and time. Success criteria definition prevents ambiguous results. Always start with discovery.
+
+**What to do instead:** Complete Phase 1 (Discovery & Asset Inventory) before generating hypotheses. Invoke market-researcher agent. Document all findings.
+
+---
+
+### "I'll design the experiment myself instead of using hypothesis-testing"
+
+**Why this fails:** hypothesis-testing skill provides rigorous experimental design, statistical analysis, and signal detection. Skipping it produces weak experiments with ambiguous results.
+
+**Reality:** Marketing-experimentation is a meta-orchestrator that coordinates multiple hypothesis-testing sessions. It does NOT design experiments itself. Delegation ensures statistical rigor.
+
+**What to do instead:** Invoke hypothesis-testing skill for each experiment in Phase 4. Let hypothesis-testing handle all experimental design, execution, and analysis.
+
+---
+
+### "One experiment is enough to draw conclusions"
+
+**Why this fails:** Single experiments miss cross-experiment patterns. Some tactics work, others don't. Single-experiment campaigns can't identify which channels/tactics are most effective.
+
+**Reality:** Marketing-experimentation tests 2-4 hypotheses to reveal strategic insights. Synthesis (Phase 5) identifies patterns across experiments - which tactics work, which don't, and why.
+
+**What to do instead:** Follow Phase 3 prioritization to select 2-4 hypotheses. Complete all experiments before synthesis. Use Phase 5 to identify patterns.
+
+---
+
+### "I'll wait until all experiments complete before updating the tracker"
+
+**Why this fails:** Batch updates create opportunity for lost data. Multi-day campaigns lose context between conversations. Incomplete tracker leads to missed experiments and confusion.
+
+**Reality:** The experiment tracker (04-experiment-tracker.md) is the ONLY source of truth that persists across sessions. Update it IMMEDIATELY after status changes.
+
+**What to do instead:** Update tracker after every status change (Planned → In Progress, In Progress → Complete). Commit tracker updates to git. Read tracker FIRST in every new conversation.
+
+---
+
+### "Results are obvious, I don't need to document synthesis"
+
+**Why this fails:** Individual experiment signals don't reveal cross-experiment patterns. "Obvious" interpretations miss confounding factors and alternative explanations.
+
+**Reality:** Documented synthesis with presenting-data skill ensures intellectual honesty. Visualization reveals patterns. Statistical assessment identifies robust vs uncertain findings.
+
+**What to do instead:** Always complete Phase 5 (Cross-Experiment Synthesis). Invoke presenting-data skill. Document patterns, visualizations, and signal classification. Get user confirmation.
+
+---
+
+### "I'll form hypotheses in Phase 6 for efficiency"
+
+**Why this fails:** Phase 6 generates IDEAS, not hypotheses. Ideas need discovery (Phase 1) and hypothesis generation (Phase 2) in new sessions. Skipping these steps leads to untested assumptions and vague experiments.
+
+**Reality:** Feed-forward cycle: Phase 6 ideas → new marketing-experimentation session → Phase 1 discovery → Phase 2 hypothesis generation → Phase 3-6 complete cycle.
+
+**What to do instead:** Generate IDEAS in Phase 6. Start NEW marketing-experimentation session with selected idea. Complete Phase 1 and Phase 2 to formalize idea into testable hypotheses.
+
+---
+
+### "I'll estimate ICE/RICE scores mentally instead of running the script"
+
+**Why this fails:** Manual estimation introduces calculation errors and inconsistency. Mental math is unreliable for multiplication and division.
+
+**Reality:** Python scripts ensure exact, reproducible results that can be audited and verified. Computational methods eliminate human error.
+
+**What to do instead:** Use Python scripts (ICE or RICE calculator) from Phase 3 instructions. Update hypothesis data in script. Run script and document exact scores. Copy output table to prioritization document.
+
+---
+
+### "I'll synthesize results mentally - no need to use presenting-data"
+
+**Why this fails:** Mental synthesis loses details and creates false confidence. Cross-experiment patterns require systematic analysis.
+
+**Reality:** presenting-data skill handles pattern identification (via interpreting-results), visualization creation (via creating-visualizations), and synthesis documentation. It ensures intellectual honesty and reproducibility.
+
+**What to do instead:** Always invoke presenting-data skill in Phase 5. Provide aggregate results table. Request pattern analysis and visualizations. Document all findings from presenting-data output.
+
+---
+
+## Summary
+
+The marketing-experimentation skill ensures rigorous, evidence-based validation of marketing concepts through structured experimental cycles. This skill orchestrates the complete Build-Measure-Learn loop from concept to data-driven signal.
+
+**What this skill ensures:**
+
+1. **Validated concepts through market research** - market-researcher agent provides current demand signals, competitive landscape analysis, and audience insights before experimentation begins.
+
+2. **Strategic hypothesis generation** - 5-10 testable hypotheses spanning multiple tactics (landing pages, ads, email, content) grounded in discovery findings and mapped to experimentation frameworks (Lean Startup, AARRR).
+
+3. **Data-driven prioritization** - Computational methods (ICE/RICE Python scripts) ensure exact, reproducible scoring. Selection of 2-4 highest-value hypotheses optimizes resource allocation.
+
+4. **Multi-experiment coordination** - Experiment tracker (living document) enables multi-conversation workflows spanning days or weeks. Status tracking (Planned, In Progress, Complete) maintains visibility across all experiments.
+
+5. **Statistical rigor through delegation** - hypothesis-testing skill handles individual experiment design, execution, and analysis. Marketing-experimentation coordinates multiple tests without duplicating statistical methodology.
+
+6. **Cross-experiment synthesis** - presenting-data skill identifies patterns across experiments (what works, what doesn't, what's unclear). Aggregate analysis reveals strategic insights invisible in single experiments.
+
+7. **Clear signal generation** - Campaign-level classification (Positive/Negative/Null/Mixed) with strategic recommendations (Scale/Pivot/Refine/Pause) provides actionable guidance for stakeholders.
+
+8. **Systematic iteration** - Phase 6 generates experiment IDEAS (not hypotheses) that feed into new marketing-experimentation sessions. Feed-forward cycle maintains rigor through repeated discovery and hypothesis generation.
+
+9. **Multi-conversation persistence** - Complete documentation at every phase enables resumption after days or weeks. Experiment tracker serves as coordination hub. All artifacts are git-committable.
+
+10. **Tool-agnostic approach** - Focuses on techniques (value proposition testing, targeting strategies, sequence optimization) rather than specific platforms. Applicable across marketing tools and channels.
+
+**Key principles:**
+- Discovery before experimentation (Phase 1 always first)
+- Hypothesis generation separate from idea generation (Phase 2 vs Phase 6)
+- Multiple experiments for pattern identification (2-4 minimum)
+- Computational scoring for objectivity (Python scripts)
+- Delegation for statistical rigor (hypothesis-testing skill)
+- Synthesis for strategic insight (presenting-data skill)
+- Documentation for reproducibility (numbered markdown files, git commits)
+- Iteration through validated cycles (ideas → new sessions → discovery → hypotheses)

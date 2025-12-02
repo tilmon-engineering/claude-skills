@@ -95,6 +95,12 @@ Raw CSV Files → [importing-data] → raw_* tables → [cleaning-data] → clea
 - **Prerequisites**: Data imported and cleaned
 - **Location**: `.claude/skills/comparative-analysis/SKILL.md`
 
+**`marketing-experimentation`** - Validate marketing concepts through rigorous experimental cycles
+- **When to use**: Testing marketing ideas, business concepts, or campaign strategies
+- **Phases**: Discovery → Hypothesis Generation → Prioritization → Experiment Coordination → Synthesis → Iteration Planning
+- **Prerequisites**: None initially (qualitative market research), data needs emerge from experiments
+- **Location**: `.claude/skills/marketing-experimentation/SKILL.md`
+
 ## Workflow Patterns
 
 ### Starting a New Analysis
