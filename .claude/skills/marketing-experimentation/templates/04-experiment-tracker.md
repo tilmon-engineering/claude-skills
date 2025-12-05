@@ -14,8 +14,12 @@ This is a LIVING DOCUMENT that tracks all experiments in this marketing-experime
 
 **Status Types:**
 - **Planned:** Experiment selected, not yet started
-- **In Progress:** hypothesis-testing skill currently executing
+- **In Progress:** Skill currently executing (hypothesis-testing or qualitative-research)
 - **Complete:** All phases done, signal documented
+
+**Experiment Types:**
+- **Quantitative:** Uses hypothesis-testing skill (measures metrics, statistical analysis)
+- **Qualitative:** Uses qualitative-research skill (interviews, surveys, focus groups, observations)
 
 **Multi-Conversation Resumption:**
 At the start of any conversation, READ THIS FILE FIRST to understand current experiment status.
@@ -26,11 +30,15 @@ At the start of any conversation, READ THIS FILE FIRST to understand current exp
 
 **Status:** Planned
 
+**Experiment Type:** [Quantitative | Qualitative]
+
 **Hypothesis:** [Full hypothesis statement from Phase 2]
 
-**Tactic/Channel:** [landing page | ads | email | content | social | SEO | other]
+**Tactic/Channel:** [landing page | ads | email | content | social | SEO | interviews | surveys | focus groups | observations | other]
 
 **Priority Score:** [ICE/RICE score from Phase 3]
+
+**Skill Used:** [hypothesis-testing | qualitative-research]
 
 **Start Date:** Not started
 
@@ -52,11 +60,15 @@ At the start of any conversation, READ THIS FILE FIRST to understand current exp
 
 **Status:** Planned
 
+**Experiment Type:** [Quantitative | Qualitative]
+
 **Hypothesis:** [Full hypothesis statement from Phase 2]
 
 **Tactic/Channel:** [tactic/channel]
 
 **Priority Score:** [ICE/RICE score]
+
+**Skill Used:** [hypothesis-testing | qualitative-research]
 
 **Start Date:** Not started
 
@@ -78,11 +90,15 @@ At the start of any conversation, READ THIS FILE FIRST to understand current exp
 
 **Status:** Planned
 
+**Experiment Type:** [Quantitative | Qualitative]
+
 **Hypothesis:** [Full hypothesis statement from Phase 2]
 
 **Tactic/Channel:** [tactic/channel]
 
 **Priority Score:** [ICE/RICE score]
+
+**Skill Used:** [hypothesis-testing | qualitative-research]
 
 **Start Date:** Not started
 

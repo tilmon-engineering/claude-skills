@@ -19,19 +19,21 @@ Use this skill when you need to validate marketing concepts or business ideas th
 **What this skill does:**
 - Validates concepts through market research before experimentation
 - Generates multiple testable hypotheses from marketing ideas
-- Coordinates multiple hypothesis-testing sessions (delegates to hypothesis-testing skill)
+- Coordinates multiple experiments: quantitative (hypothesis-testing) and qualitative (qualitative-research)
 - Synthesizes results across experiments using interpreting-results and creating-visualizations
 - Produces clear signals (positive/negative/null/mixed) for each campaign
 - Generates actionable next-iteration ideas based on experimental evidence
 
 **What this skill does NOT do:**
-- Design individual experiments (delegates to hypothesis-testing skill)
-- Execute statistical analysis directly (uses hypothesis-testing for rigor)
+- Design individual experiments (delegates to hypothesis-testing or qualitative-research)
+- Execute statistical analysis directly (uses hypothesis-testing for quantitative rigor)
+- Conduct interviews/surveys/observations directly (uses qualitative-research for qualitative rigor)
 - Operationalize successful ideas (focuses on validation, not scaling)
 - Platform-specific implementation (tool-agnostic techniques only)
 
 **Integration with existing skills:**
-- **Delegates to `hypothesis-testing`** for individual experiment design and execution
+- **Delegates to `hypothesis-testing`** for quantitative experiment design and execution (metrics, A/B tests, statistical analysis)
+- **Delegates to `qualitative-research`** for qualitative experiment design and execution (interviews, surveys, focus groups, observations)
 - **Uses `interpreting-results`** to synthesize findings across multiple experiments
 - **Uses `creating-visualizations`** to communicate aggregate results
 - **Invokes `market-researcher` agent** for concept validation via internet research
@@ -42,7 +44,8 @@ This skill is designed for campaigns spanning days or weeks. Each phase document
 ## Prerequisites
 
 **Required skills:**
-- `hypothesis-testing` - Individual experiment design and execution (invoked once per hypothesis)
+- `hypothesis-testing` - Quantitative experiment design and execution (invoked for metric-based experiments)
+- `qualitative-research` - Qualitative experiment design and execution (invoked for interviews, surveys, focus groups, observations)
 - `interpreting-results` - Result synthesis and pattern identification (invoked in Phase 5)
 - `creating-visualizations` - Aggregate result visualization (invoked in Phase 5)
 
@@ -53,11 +56,13 @@ This skill is designed for campaigns spanning days or weeks. Each phase document
 - Understanding of Lean Startup Build-Measure-Learn cycle
 - Familiarity with marketing tactics (landing pages, ads, email, content)
 - Basic experimental design principles (control/treatment, signals, metrics)
+- Understanding of qualitative vs quantitative research methods
 
 **Data requirements:**
 - None initially (market research is qualitative)
 - Data requirements emerge from experiment design in Phase 4
-- Each hypothesis-testing session will specify its own data needs
+- Quantitative experiments (hypothesis-testing): SQL databases, analytics data, A/B test results
+- Qualitative experiments (qualitative-research): Interview transcripts, survey responses, observation notes
 
 ## Mandatory Process Structure
 
@@ -562,9 +567,10 @@ analysis/marketing-experimentation/[campaign-name]/
 
 **CHECKPOINT:** Before proceeding, you MUST have:
 - [ ] Created experiment tracker with all selected hypotheses
-- [ ] Invoked hypothesis-testing skill for each hypothesis (or documented plan to invoke)
+- [ ] Determined experiment type for each hypothesis (Quantitative or Qualitative)
+- [ ] Invoked appropriate skill for each hypothesis (hypothesis-testing OR qualitative-research)
 - [ ] Updated tracker with experiment status (Planned, In Progress, Complete)
-- [ ] Documented location of each hypothesis-testing session
+- [ ] Documented location of each experiment session
 - [ ] Saved experiment tracker to `04-experiment-tracker.md`
 - [ ] Note: This phase may span multiple days/weeks and conversations
 
@@ -572,7 +578,50 @@ analysis/marketing-experimentation/[campaign-name]/
 
 **CRITICAL:** This phase is designed for multi-conversation workflows. The experiment tracker is a LIVING DOCUMENT that you will update throughout experimentation. New conversations should ALWAYS read this file first.
 
-1. **Create experiment tracker**
+1. **Determine experiment type for each hypothesis**
+
+   **CRITICAL:** Before creating the tracker, classify each hypothesis as Quantitative or Qualitative.
+
+   **Quantitative experiments** use hypothesis-testing skill:
+   - Measure **numeric metrics**: CTR, conversion rate, bounce rate, time on page, revenue, CAC, LTV, etc.
+   - Rely on **existing data sources**: Google Analytics, ad platforms, CRM, email platforms, database queries
+   - Test using **A/B tests, multivariate tests, or time-series analysis**
+   - Require **statistical significance testing**
+   - **Examples:**
+     - Landing page A/B test measuring conversion rate
+     - Ad campaign comparing CTR across different creatives
+     - Email sequence measuring open rate and click-through rate
+     - SEO experiment tracking organic traffic changes
+
+   **Qualitative experiments** use qualitative-research skill:
+   - Gather **non-numeric insights**: opinions, experiences, needs, pain points, motivations
+   - Collect through **interviews, surveys, focus groups, or observations**
+   - Analyze using **thematic analysis** rather than statistical tests
+   - Focus on **understanding why** behaviors occur
+   - **Examples:**
+     - Customer discovery interviews to understand pain points
+     - Open-ended survey asking about product needs
+     - Focus group discussing ad creative perceptions
+     - Observational study of how users interact with product
+
+   **Decision criteria:**
+
+   Ask: "What do we need to learn?"
+   - If answer is "Does X increase metric Y by Z%?" → **Quantitative** (hypothesis-testing)
+   - If answer is "Why do users do X?" or "What do users think about Y?" → **Qualitative** (qualitative-research)
+
+   Ask: "What data will we collect?"
+   - If answer is "Metrics from analytics" → **Quantitative** (hypothesis-testing)
+   - If answer is "Interview transcripts, survey responses, or observation notes" → **Qualitative** (qualitative-research)
+
+   **Mixed methods:**
+   - Some hypotheses may require BOTH quantitative and qualitative experiments
+   - Example: "Value prop clarity drives conversion" could test:
+     - Quantitatively: A/B test landing page, measure conversion rate (hypothesis-testing)
+     - Qualitatively: Interview users about which value prop resonates (qualitative-research)
+   - Track these as separate experiments with linked hypotheses in the tracker
+
+2. **Create experiment tracker**
 
    The tracker is your coordination hub for managing multiple experiments over time.
 
@@ -596,13 +645,13 @@ analysis/marketing-experimentation/[campaign-name]/
    **Key Findings:** [Brief summary when complete, "TBD" otherwise]
    ```
 
-2. **Invoke hypothesis-testing skill for each experiment**
+2. **Invoke appropriate skill for each experiment**
 
    For each hypothesis marked "Planned" or "In Progress":
 
    **Step 1:** Read the hypothesis details from `02-hypothesis-generation.md`
 
-   **Step 2:** Invoke the `hypothesis-testing` skill:
+   **Step 2a:** If **Quantitative experiment**, invoke `hypothesis-testing` skill:
    ```markdown
    Use hypothesis-testing skill to test: [Hypothesis statement]
 
@@ -611,21 +660,44 @@ analysis/marketing-experimentation/[campaign-name]/
    - Save location: analysis/marketing-experimentation/[campaign-name]/experiments/[experiment-name]/
    - Success criteria: [From Phase 1 discovery]
    - Expected outcome: [From Phase 2 hypothesis]
+   - Metric to measure: [CTR, conversion rate, etc.]
+   - Data source: [Google Analytics, database, etc.]
+   ```
+
+   **Step 2b:** If **Qualitative experiment**, invoke `qualitative-research` skill:
+   ```markdown
+   Use qualitative-research skill to conduct: [Hypothesis statement]
+
+   Context for qualitative-research:
+   - Session name: [descriptive-name-for-experiment]
+   - Save location: analysis/marketing-experimentation/[campaign-name]/experiments/[experiment-name]/
+   - Research question: [From Phase 2 hypothesis]
+   - Collection method: [Interviews | Surveys | Focus Groups | Observations]
+   - Success criteria: [What insights validate/invalidate hypothesis?]
    ```
 
    **Step 3:** Update experiment tracker:
    - Change status from "Planned" to "In Progress"
    - Add start date
    - Update location with actual path
+   - Document experiment type (Quantitative or Qualitative)
 
-   **Step 4:** Let hypothesis-testing skill complete its 5-phase workflow:
+   **Step 4a:** Let **hypothesis-testing** skill complete its 5-phase workflow:
    - Phase 1: Hypothesis Formulation
    - Phase 2: Test Design
    - Phase 3: Data Analysis
    - Phase 4: Statistical Interpretation
    - Phase 5: Conclusion
 
-   **Step 5:** When hypothesis-testing completes, update tracker:
+   **Step 4b:** Let **qualitative-research** skill complete its 6-phase workflow:
+   - Phase 1: Research Design
+   - Phase 2: Data Collection
+   - Phase 3: Data Familiarization
+   - Phase 4: Systematic Coding
+   - Phase 5: Theme Development
+   - Phase 6: Synthesis & Reporting
+
+   **Step 5:** When skill completes, update tracker:
    - Change status to "Complete"
    - Add completion date
    - Document signal (Positive/Negative/Null/Mixed)
@@ -727,19 +799,26 @@ analysis/marketing-experimentation/[campaign-name]/
 
    Compile findings from all experiments into a summary table:
 
-   **Example Aggregate Table:**
+   **Example Aggregate Table (Mixed Quantitative & Qualitative):**
 
-   | Experiment | Hypothesis | Tactic | Signal | Key Metric | Result | Confidence |
-   |------------|------------|--------|--------|------------|--------|------------|
-   | E1 | Value prop clarity | Landing page | Positive | Conversion rate | +18% | High |
-   | E2 | Ad targeting | Ads | Null | CTR | +2% (not sig.) | Medium |
-   | E3 | Email sequence | Email | Negative | Open rate | -5% | High |
+   | Experiment | Type | Hypothesis | Tactic | Signal | Key Finding | Confidence |
+   |------------|------|------------|--------|--------|-------------|------------|
+   | E1 | Quant | Value prop clarity | Landing page A/B test | Positive | Conversion rate +18% (p<0.05) | High |
+   | E2 | Qual | Customer pain points | Discovery interviews | Positive | 8 of 10 cited onboarding complexity | High |
+   | E3 | Quant | Ad targeting | Ads | Null | CTR +2% (not sig., p=0.12) | Medium |
+   | E4 | Qual | Ad message resonance | Focus groups | Negative | 6 of 8 found messaging confusing | High |
 
-   Include:
-   - Signal classification from hypothesis-testing
-   - Key metric measured
-   - Magnitude of effect (with significance)
+   **For Quantitative experiments (hypothesis-testing):**
+   - Signal classification (Positive/Negative/Null/Mixed)
+   - Key metric measured (CTR, conversion rate, etc.)
+   - Magnitude of effect with statistical significance (e.g., "+18%, p<0.05")
    - Confidence level from statistical analysis
+
+   **For Qualitative experiments (qualitative-research):**
+   - Signal classification (Positive/Negative/Null/Mixed)
+   - Key themes identified with prevalence (e.g., "8 of 10 participants mentioned X")
+   - Representative quotes or patterns
+   - Confidence assessment (credibility, dependability, transferability)
 
 3. **Invoke presenting-data skill for comprehensive synthesis**
 
@@ -765,12 +844,13 @@ analysis/marketing-experimentation/[campaign-name]/
    - Reproducibility (references to experiment locations)
 
    **Focus areas for synthesis:**
-   - **What worked:** Experiments with Positive signals
-   - **What didn't work:** Experiments with Negative signals
+   - **What worked:** Experiments with Positive signals (both quantitative and qualitative)
+   - **What didn't work:** Experiments with Negative signals (both quantitative and qualitative)
    - **What's unclear:** Experiments with Null or Mixed signals
-   - **Cross-experiment patterns:** Do results cluster by tactic? By audience? By timing?
+   - **Cross-experiment patterns:** Do results cluster by tactic? By audience? By timing? Do quantitative and qualitative findings align or conflict?
+   - **Triangulation:** Do qualitative findings explain quantitative results? (e.g., interviews reveal WHY conversion rate increased)
    - **Confounding factors:** Are there external factors affecting multiple experiments?
-   - **Confidence assessment:** Which findings are robust? Which are uncertain?
+   - **Confidence assessment:** Which findings are robust? Which are uncertain? How do qualitative and quantitative confidence levels compare?
 
 4. **Document patterns and insights**
 
@@ -1012,13 +1092,13 @@ These are rationalizations that lead to failure. When you catch yourself thinkin
 
 ---
 
-### "I'll design the experiment myself instead of using hypothesis-testing"
+### "I'll design the experiment myself instead of using hypothesis-testing or qualitative-research"
 
-**Why this fails:** hypothesis-testing skill provides rigorous experimental design, statistical analysis, and signal detection. Skipping it produces weak experiments with ambiguous results.
+**Why this fails:** The research skills provide rigorous experimental design, analysis, and signal detection. hypothesis-testing ensures statistical rigor for quantitative experiments. qualitative-research ensures systematic rigor for qualitative experiments. Skipping them produces weak experiments with ambiguous results.
 
-**Reality:** Marketing-experimentation is a meta-orchestrator that coordinates multiple hypothesis-testing sessions. It does NOT design experiments itself. Delegation ensures statistical rigor.
+**Reality:** Marketing-experimentation is a meta-orchestrator that coordinates multiple experiments. It does NOT design experiments itself. Delegation to appropriate skills (hypothesis-testing or qualitative-research) ensures methodological rigor.
 
-**What to do instead:** Invoke hypothesis-testing skill for each experiment in Phase 4. Let hypothesis-testing handle all experimental design, execution, and analysis.
+**What to do instead:** Determine experiment type (quantitative or qualitative) in Phase 4. Invoke hypothesis-testing skill for quantitative experiments. Invoke qualitative-research skill for qualitative experiments. Let the appropriate skill handle all design, execution, and analysis.
 
 ---
 
@@ -1094,9 +1174,9 @@ The marketing-experimentation skill ensures rigorous, evidence-based validation 
 
 3. **Data-driven prioritization** - Computational methods (ICE/RICE Python scripts) ensure exact, reproducible scoring. Selection of 2-4 highest-value hypotheses optimizes resource allocation.
 
-4. **Multi-experiment coordination** - Experiment tracker (living document) enables multi-conversation workflows spanning days or weeks. Status tracking (Planned, In Progress, Complete) maintains visibility across all experiments.
+4. **Multi-experiment coordination** - Experiment tracker (living document) enables multi-conversation workflows spanning days or weeks. Status tracking (Planned, In Progress, Complete) maintains visibility across all experiments. Supports both quantitative and qualitative experiment types.
 
-5. **Statistical rigor through delegation** - hypothesis-testing skill handles individual experiment design, execution, and analysis. Marketing-experimentation coordinates multiple tests without duplicating statistical methodology.
+5. **Methodological rigor through delegation** - hypothesis-testing skill handles quantitative experiment design (statistical analysis, A/B tests, metrics). qualitative-research skill handles qualitative experiment design (interviews, surveys, focus groups, observations, thematic analysis). Marketing-experimentation coordinates multiple tests without duplicating methodology.
 
 6. **Cross-experiment synthesis** - presenting-data skill identifies patterns across experiments (what works, what doesn't, what's unclear). Aggregate analysis reveals strategic insights invisible in single experiments.
 
@@ -1113,7 +1193,8 @@ The marketing-experimentation skill ensures rigorous, evidence-based validation 
 - Hypothesis generation separate from idea generation (Phase 2 vs Phase 6)
 - Multiple experiments for pattern identification (2-4 minimum)
 - Computational scoring for objectivity (Python scripts)
-- Delegation for statistical rigor (hypothesis-testing skill)
-- Synthesis for strategic insight (presenting-data skill)
+- Delegation for methodological rigor (hypothesis-testing for quantitative, qualitative-research for qualitative)
+- Mixed-methods integration (quantitative metrics + qualitative insights for complete picture)
+- Synthesis for strategic insight (presenting-data skill handles both quantitative and qualitative results)
 - Documentation for reproducibility (numbered markdown files, git commits)
 - Iteration through validated cycles (ideas → new sessions → discovery → hypotheses)
