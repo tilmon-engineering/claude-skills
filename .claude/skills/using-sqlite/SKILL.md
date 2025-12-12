@@ -22,7 +22,8 @@ Use this skill when you need to:
 - Understand which CLI invocation pattern to use
 
 **When NOT to use:**
-- Complex data cleaning logic (delegate to cleaning-data skill + sub-agents)
+- Database-agnostic data profiling (see `understanding-data` skill for patterns that work across all SQL databases)
+- Complex data cleaning logic (delegate to `cleaning-data` skill + sub-agents)
 - Statistical analysis (use Python/pandas for advanced statistics)
 - Large-scale transformations (use Python sqlite3 module)
 
@@ -90,7 +91,7 @@ See @./writing-queries.md for:
 - DataPeeker percentage calculation conventions
 - Common verification queries
 
-**Note:** For general SQL query formulation across databases, use the `writing-queries` skill. This guidance focuses on SQLite-specific patterns.
+**See also:** `writing-queries` and `understanding-data` skills for database-agnostic SQL patterns and data profiling approaches. This guidance focuses on SQLite-specific syntax, CLI usage, and optimizations.
 
 **When:** Need SQLite-specific syntax, DataPeeker query conventions, date formatting with STRFTIME
 

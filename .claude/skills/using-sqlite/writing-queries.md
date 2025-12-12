@@ -317,7 +317,7 @@ PRAGMA table_info(raw_table);
 
 ### Quality Assessment Queries
 
-**From understanding-data skill:**
+**Common data profiling patterns:**
 
 ```sql
 -- NULL distribution
@@ -334,13 +334,15 @@ SELECT
     AVG(numeric_col) as avg
 FROM table_name;
 
--- Date ranges
+-- Date ranges (SQLite-specific)
 SELECT
     MIN(DATE(date_col)) as earliest,
     MAX(DATE(date_col)) as latest,
     JULIANDAY(MAX(DATE(date_col))) - JULIANDAY(MIN(DATE(date_col))) as days_span
 FROM table_name;
 ```
+
+**Note:** These patterns align with database-agnostic data profiling best practices.
 
 ---
 

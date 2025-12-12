@@ -255,3 +255,30 @@ Skills are continuously improved based on usage. When you discover:
 - **Inefficiencies**: Redundant or unnecessary steps
 
 Document findings and propose skill updates to maintain quality.
+
+## Skill Dependencies
+
+Review @skill-dependencies.mermaid
+
+**CRITICAL: Maintaining Skill Dependencies**
+
+⚠️ **MANDATORY STEP AFTER ANY SKILL MODIFICATION** ⚠️
+
+Whenever you create, update, or modify ANY skill in this directory, you **MUST**:
+
+1. Run the analysis script:
+   ```bash
+   python3 ./.claude/skills/analyze-skill-dependencies.py
+   ```
+
+2. Review the generated `.claude/skills/skill-dependencies.mermaid` file
+
+3. Copy the contents and update the Mermaid diagram below with the new findings
+
+**NEVER skip this step.** The dependency diagram is critical for understanding skill relationships and must remain accurate. An outdated diagram leads to:
+- Missing prerequisite skills during analysis
+- Incorrect workflow planning
+- Broken skill orchestration
+- Wasted time debugging circular dependencies
+
+If you update a skill and do not run this script, you have failed to complete the task.
