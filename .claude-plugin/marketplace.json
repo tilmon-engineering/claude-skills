@@ -1,0 +1,23 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "tilmon-eng-skills",
+  "version": "1.0.0",
+  "description": "Tilmon Engineering institutional knowledge marketplace - AI agent skills for analysis, security, customer service, and knowledge management",
+  "owner": {
+    "name": "Tilmon Engineering",
+    "email": "team@tilmonengineering.com"
+  },
+  "plugins": [
+    {
+      "name": "datapeeker",
+      "description": "Structured research methods for AI agents - hypothesis testing, exploratory analysis, comparative analysis, and qualitative research",
+      "version": "1.0.0",
+      "source": "./plugins/datapeeker",
+      "author": {
+        "name": "Tilmon Engineering",
+        "email": "team@tilmonengineering.com"
+      },
+      "keywords": ["data-analysis", "research-methods", "hypothesis-testing", "qualitative-research"]
+    }
+  ]
+}

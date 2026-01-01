@@ -1,7 +1,21 @@
+# User data and analysis
 .obsidian/**
 data/**
-**/__pycache__
 analysis/**
 !analysis/_template/**
-!**/.gitkeep
+
+# Local configurations
+.serena/**
+
+# Python cache
+**/__pycache__
+
+# Database files
+*.db
+*.sqlite
+
+# Git worktrees
 .worktrees/
+
+# System files
+!**/.gitkeep

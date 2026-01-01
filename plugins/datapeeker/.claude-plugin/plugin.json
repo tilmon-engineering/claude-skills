@@ -1,0 +1,21 @@
+{
+  "name": "datapeeker",
+  "description": "Structured research methods for AI agents - hypothesis testing, exploratory analysis, comparative analysis, and qualitative research",
+  "version": "1.0.0",
+  "author": {
+    "name": "Tilmon Engineering",
+    "email": "team@tilmonengineering.com"
+  },
+  "homepage": "https://github.com/tilmon-engineering/tilmon-eng-skills",
+  "repository": "https://github.com/tilmon-engineering/tilmon-eng-skills",
+  "license": "UNLICENSED",
+  "keywords": [
+    "data-analysis",
+    "research-methods",
+    "hypothesis-testing",
+    "exploratory-analysis",
+    "comparative-analysis",
+    "qualitative-research",
+    "market-research"
+  ]
+}
