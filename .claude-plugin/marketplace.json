@@ -18,6 +18,17 @@
         "email": "team@tilmonengineering.com"
       },
       "keywords": ["data-analysis", "research-methods", "hypothesis-testing", "qualitative-research"]
+    },
+    {
+      "name": "autonomy",
+      "description": "Enable AI agents to iteratively self-direct in pursuit of open-ended goals with state continuity across conversations through iteration journals",
+      "version": "1.0.0",
+      "source": "./plugins/autonomy",
+      "author": {
+        "name": "Tilmon Engineering",
+        "email": "team@tilmonengineering.com"
+      },
+      "keywords": ["autonomy", "iteration", "goal-pursuit", "state-continuity", "journal", "open-ended-goals"]
     }
   ]
 }

@@ -1,0 +1,20 @@
+{
+  "name": "autonomy",
+  "version": "1.0.0",
+  "description": "Enable AI agents to iteratively self-direct in pursuit of open-ended goals with state continuity across conversations through iteration journals",
+  "author": {
+    "name": "Tilmon Engineering",
+    "email": "team@tilmonengineering.com"
+  },
+  "homepage": "https://github.com/tilmon-engineering/tilmon-eng-skills",
+  "repository": "https://github.com/tilmon-engineering/tilmon-eng-skills",
+  "license": "UNLICENSED",
+  "keywords": [
+    "autonomy",
+    "iteration",
+    "goal-pursuit",
+    "state-continuity",
+    "journal",
+    "open-ended-goals"
+  ]
+}

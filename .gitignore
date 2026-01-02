@@ -19,3 +19,4 @@ analysis/**
 
 # System files
 !**/.gitkeep
+**/.DS_Store
