@@ -165,7 +165,7 @@ Goal definition: `autonomy/[goal-name]/goal.md`
 **Next step:** Run `/start-iteration` to begin the first iteration.
 
 This will:
-- Create iteration-001-[today's date].md
+- Create iteration-0001-[today's date].md
 - Set up workspace for working toward the goal
 - Track progress in iteration journals
 ```

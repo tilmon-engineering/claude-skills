@@ -149,7 +149,7 @@ Before beginning work, create the journal file for this iteration:
 1. **Determine iteration number and filename:**
    - Count: N existing iterations
    - This iteration: N+1
-   - Filename: `iteration-NNN-YYYY-MM-DD.md` (today's date)
+   - Filename: `iteration-NNNN-YYYY-MM-DD.md` (today's date)
 
 2. **Prompt user for iteration intention:**
    ```
@@ -161,7 +161,7 @@ Before beginning work, create the journal file for this iteration:
 3. **Write initial journal entry:**
 
 ```markdown
-# Iteration NNN - YYYY-MM-DD
+# Iteration NNNN - YYYY-MM-DD
 
 ## Beginning State
 [From journal-reader output or user context:
@@ -203,7 +203,7 @@ Before beginning work, create the journal file for this iteration:
 [Will be filled when ending iteration]
 ```
 
-4. **Write file** to: `autonomy/[goal-name]/iteration-NNN-YYYY-MM-DD.md`
+4. **Write file** to: `autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md`
 
 ### Step 6: Ready to Work
 
@@ -220,8 +220,8 @@ Before beginning work, create the journal file for this iteration:
 
 ### Iteration Numbering
 
-- Use 3-digit zero-padded numbers: `001`, `002`, ..., `099`, `100`
-- Format: `iteration-NNN-YYYY-MM-DD.md`
+- Use 4-digit zero-padded numbers: `0001`, `0002`, ..., `0999`, `1000`
+- Format: `iteration-NNNN-YYYY-MM-DD.md`
 - Date is when iteration occurred (today)
 
 ### Context Loading Strategy

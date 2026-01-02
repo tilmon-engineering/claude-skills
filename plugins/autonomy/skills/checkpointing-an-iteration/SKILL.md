@@ -98,11 +98,11 @@ Read the existing journal file to see what's already documented:
 
 ```bash
 # Use Read tool
-file: "autonomy/[goal-name]/iteration-NNN-YYYY-MM-DD.md"
+file: "autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md"
 ```
 
 The journal will have:
-- **Metadata header** (# Iteration NNN - YYYY-MM-DD)
+- **Metadata header** (# Iteration NNNN - YYYY-MM-DD)
 - **Beginning State** section (from starting-an-iteration)
 - **Iteration Intention** section (from starting-an-iteration)
 - **Work Performed** section (may be partially filled from previous checkpoint, or empty)
@@ -158,7 +158,7 @@ Report to user:
 ```markdown
 **Checkpoint saved for iteration [N]**
 
-Journal updated: `autonomy/[goal-name]/iteration-NNN-YYYY-MM-DD.md`
+Journal updated: `autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md`
 
 ## Checkpoint Summary
 - **Skills used:** [Count] skills/workflows

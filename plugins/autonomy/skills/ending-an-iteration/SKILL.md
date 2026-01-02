@@ -31,7 +31,8 @@ Use this skill when:
 | 2. Identify stopping point | Why is this iteration ending? | User confirmation |
 | 3. Complete journal entry | Update existing journal file | Read, Edit |
 | 4. Update summary | If iteration 5, 10, 15, etc. | Task (journal-summarizer) |
-| 5. Announce completion | Confirm next steps | Direct output |
+| 5a. Git commit and tag | Commit journal to current branch | Bash |
+| 5b. Announce completion | Confirm next steps | Direct output |
 
 ## Process
 
@@ -167,7 +168,7 @@ The journal file was created by starting-an-iteration. Now complete it:
 2. **Read existing journal:**
    ```bash
    # Use Read to load current content
-   file: "autonomy/[goal-name]/iteration-NNN-YYYY-MM-DD.md"
+   file: "autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md"
    ```
 
    Journal will have:
@@ -240,14 +241,118 @@ Model: haiku
 
 **Wait for agent** to update summary.md
 
-### Step 5: Announce Completion
+### Step 5a: Git Commit and Tag
 
-Report to user:
+After journal is complete and summary is updated (if needed), commit to git:
 
+1. **Extract iteration metadata:**
+   - Goal name from journal path: `autonomy/[goal-name]/`
+   - Iteration number from filename: `iteration-NNNN-YYYY-MM-DD.md`
+   - Extract 2-3 line summary from Ending State section
+
+2. **Build commit message:**
+   ```
+   journal: [goal-name] iteration NNNN
+
+   [Line 1: Key accomplishment or progress]
+   [Line 2: Major decisions or blockers]
+   [Line 3: Current state if needed]
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>
+   ```
+
+3. **Stage files:**
+   ```bash
+   # Always stage journal file
+   git add autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md
+
+   # If summary was updated this iteration (iteration % 5 == 0)
+   git add autonomy/[goal-name]/summary.md
+   ```
+
+4. **Create commit:**
+   ```bash
+   # Use heredoc for multi-line message
+   git commit -m "$(cat <<'EOF'
+   journal: [goal-name] iteration NNNN
+
+   [Summary line 1]
+   [Summary line 2]
+   [Summary line 3 if needed]
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>
+   EOF
+   )"
+   ```
+
+5. **Create annotated tag:**
+   ```bash
+   # Tag format: autonomy/iteration-NNNN (4 digits, zero-padded)
+   git tag -a "autonomy/iteration-$(printf '%04d' NNNN)" \
+     -m "journal: [goal-name] iteration NNNN"
+   ```
+
+6. **Handle errors gracefully:**
+   - If git operations fail (not a repo, detached HEAD, permissions, etc.):
+     - Capture error message
+     - Continue to Step 5b anyway (journal is written, that's critical)
+     - Report warning to user with manual commands
+
+**Error reporting format:**
+```markdown
+⚠️ **Git Integration Warning:**
+Failed to commit journal: [error message]
+
+You can manually commit with:
+  git add autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md
+  git commit -m "journal: [goal-name] iteration NNNN"
+  git tag -a "autonomy/iteration-NNNN" -m "journal: [goal-name] iteration NNNN"
+```
+
+**Success indicator:**
+- If git operations succeed, note success for Step 5b announcement
+- Tag `autonomy/iteration-NNNN` marks this iteration in git history
+
+### Step 5b: Announce Completion
+
+Report to user with git status:
+
+**If git operations succeeded:**
 ```markdown
 **Iteration [N] complete for goal: [goal-name]**
 
-Journal entry written: `autonomy/[goal-name]/iteration-NNN-YYYY-MM-DD.md`
+✓ Journal committed and tagged: `autonomy/iteration-NNNN`
+
+Journal entry: `autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md`
+
+## Summary of This Iteration
+- **Work completed:** [Brief summary]
+- **Key decisions:** [Major choices made]
+- **Blockers:** [What's preventing progress]
+- **Next steps:** [Recommended for iteration N+1]
+
+---
+
+**Ready to resume in next conversation with `/start-iteration`**
+```
+
+**If git operations failed:**
+```markdown
+**Iteration [N] complete for goal: [goal-name]**
+
+Journal entry written: `autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md`
+
+⚠️ **Git Integration Warning:**
+Failed to commit journal: [error message]
+
+You can manually commit with:
+  git add autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md
+  git commit -m "journal: [goal-name] iteration NNNN"
+  git tag -a "autonomy/iteration-NNNN" -m "journal: [goal-name] iteration NNNN"
 
 ## Summary of This Iteration
 - **Work completed:** [Brief summary]
@@ -305,6 +410,30 @@ None - iteration progressed smoothly
 
 This shows the section was considered, not forgotten.
 
+### Git Integration
+
+**Automatic commits to current branch:**
+- Journal file is committed to whatever branch you're currently on
+- Does NOT create new branch or switch branches
+- Uses commit message format: `journal: [goal-name] iteration NNNN`
+- Tags commit as `autonomy/iteration-NNNN` for easy navigation
+
+**Error handling:**
+- Git failures do NOT block iteration completion
+- Journal is always written, even if commit fails
+- User receives manual commands if git fails
+- Graceful degradation ensures state is preserved
+
+**What gets committed:**
+- Always: `iteration-NNNN-YYYY-MM-DD.md` journal file
+- Sometimes: `summary.md` (if iteration % 5 == 0)
+- Never: Other files in working directory
+
+**Tag benefits:**
+- Navigate to iteration: `git checkout autonomy/iteration-0042`
+- List all iterations: `git tag -l 'autonomy/*'`
+- Immutable history markers for CI/CD integration
+
 ## Common Mistakes
 
 | Mistake | Reality |
@@ -315,12 +444,14 @@ This shows the section was considered, not forgotten.
 | "No blockers this time, I'll skip that section" | NO. Write "None" to show you checked. |
 | "Summary update can wait" | NO. If iteration % 5 == 0, update summary. |
 | "I'll skip comparing against iteration intention" | NO. Ending State should assess how well intention was achieved. |
+| "Git commit failed, so iteration failed" | NO. Journal writing is critical, git commit is helpful. Warn about git error but complete iteration. |
+| "I'll create a new branch for the commit" | NO. Commit to current branch. User controls branching strategy. |
 
 ## After Ending
 
 Once iteration is ended:
 - Journal file completed with Ending State and Iteration Metadata
 - Summary updated if needed (every 5 iterations)
+- Git commit created and tagged as `autonomy/iteration-NNNN` (if git operations succeeded)
 - Full iteration story captured for next iteration
-- User should commit journal to git
 - Can start new iteration anytime with `/start-iteration`
