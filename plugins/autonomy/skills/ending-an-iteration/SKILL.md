@@ -250,20 +250,54 @@ After journal is complete and summary is updated (if needed), commit to git:
    - Iteration number from filename: `iteration-NNNN-YYYY-MM-DD.md`
    - Extract 2-3 line summary from Ending State section
 
-2. **Build commit message:**
+2. **Determine iteration status:**
+
+   Analyze Ending State section to determine status:
+   - Look for explicit status indicators: "This is a dead end", "Approach invalidated", "Successfully completed", "Blocked by", etc.
+   - **active** (default) - Normal progression, work continuing
+   - **blocked** - Contains phrases like "blocked by", "waiting on", "cannot proceed until"
+   - **concluded** - Contains phrases like "successfully completed", "goal achieved", "experiment succeeded"
+   - **dead-end** - Contains phrases like "dead end", "not working", "abandoning approach", "invalidated"
+
+3. **Extract quantitative metrics:**
+
+   Parse Ending State for metrics with numbers:
+   - Look for patterns like "MRR: $62k (+12%)", "Build time: 3.2min (-40%)", "Churn: 8% (from 13%)"
+   - Collect all quantitative progress indicators
+   - Format as single line: `Metrics: [metric1], [metric2], ...` or "None" if no metrics
+
+4. **Summarize journal content:**
+
+   Create 4-6 sentence summary from Work Performed and Ending State:
+   - What was accomplished this iteration
+   - Key decisions made and rationale
+   - Major learnings or discoveries
+   - How this iteration moved toward the goal
+   - Be substantive but concise - this is for git log readers
+
+5. **Build enhanced commit message:**
    ```
    journal: [goal-name] iteration NNNN
 
-   [Line 1: Key accomplishment or progress]
-   [Line 2: Major decisions or blockers]
-   [Line 3: Current state if needed]
+   [2-3 line summary from Ending State - as before]
+
+   ## Journal Summary
+
+   [4-6 sentence summary from step 4 above - what happened, what was learned, what changed]
+
+   ## Iteration Metadata
+
+   Status: [active|blocked|concluded|dead-end]
+   Metrics: [quantitative metrics from step 3, or "None"]
+   Blockers: [summary from Blockers Encountered section, or "None"]
+   Next: [next iteration intention from Iteration Metadata section]
 
    🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
    Co-Authored-By: Claude <noreply@anthropic.com>
    ```
 
-3. **Stage files:**
+6. **Stage files:**
    ```bash
    # Always stage journal file
    git add autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md
@@ -272,15 +306,24 @@ After journal is complete and summary is updated (if needed), commit to git:
    git add autonomy/[goal-name]/summary.md
    ```
 
-4. **Create commit:**
+7. **Create commit:**
    ```bash
-   # Use heredoc for multi-line message
+   # Use heredoc for multi-line message with enhanced format
    git commit -m "$(cat <<'EOF'
    journal: [goal-name] iteration NNNN
 
-   [Summary line 1]
-   [Summary line 2]
-   [Summary line 3 if needed]
+   [2-3 line summary from Ending State]
+
+   ## Journal Summary
+
+   [4-6 sentence summary of iteration]
+
+   ## Iteration Metadata
+
+   Status: [active|blocked|concluded|dead-end]
+   Metrics: [metrics or "None"]
+   Blockers: [blockers or "None"]
+   Next: [next iteration intention]
 
    🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
@@ -289,14 +332,27 @@ After journal is complete and summary is updated (if needed), commit to git:
    )"
    ```
 
-5. **Create annotated tag:**
+8. **Create annotated tag with branch-aware naming:**
    ```bash
-   # Tag format: autonomy/iteration-NNNN (4 digits, zero-padded)
-   git tag -a "autonomy/iteration-$(printf '%04d' NNNN)" \
+   # Get current branch name
+   current_branch=$(git branch --show-current)
+
+   # Extract strategy name from branch
+   # For autonomy branches: "autonomy/experiment-a" → "experiment-a"
+   # For non-autonomy branches: use goal name as strategy
+   if [[ "$current_branch" =~ ^autonomy/ ]]; then
+     strategy_name=${current_branch#autonomy/}
+   else
+     # Use goal name from journal path
+     strategy_name="[goal-name]"
+   fi
+
+   # Tag format: autonomy/<strategy-name>/iteration-NNNN (4 digits, zero-padded)
+   git tag -a "autonomy/${strategy_name}/iteration-$(printf '%04d' NNNN)" \
      -m "journal: [goal-name] iteration NNNN"
    ```
 
-6. **Handle errors gracefully:**
+9. **Handle errors gracefully:**
    - If git operations fail (not a repo, detached HEAD, permissions, etc.):
      - Capture error message
      - Continue to Step 5b anyway (journal is written, that's critical)
@@ -309,13 +365,13 @@ Failed to commit journal: [error message]
 
 You can manually commit with:
   git add autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md
-  git commit -m "journal: [goal-name] iteration NNNN"
-  git tag -a "autonomy/iteration-NNNN" -m "journal: [goal-name] iteration NNNN"
+  git commit -m "journal: [goal-name] iteration NNNN ..."
+  git tag -a "autonomy/[strategy-name]/iteration-NNNN" -m "journal: [goal-name] iteration NNNN"
 ```
 
 **Success indicator:**
 - If git operations succeed, note success for Step 5b announcement
-- Tag `autonomy/iteration-NNNN` marks this iteration in git history
+- Tag `autonomy/[strategy-name]/iteration-NNNN` marks this iteration in git history
 
 ### Step 5b: Announce Completion
 
@@ -325,9 +381,11 @@ Report to user with git status:
 ```markdown
 **Iteration [N] complete for goal: [goal-name]**
 
-✓ Journal committed and tagged: `autonomy/iteration-NNNN`
+✓ Journal committed and tagged: `autonomy/[strategy-name]/iteration-NNNN`
 
 Journal entry: `autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md`
+Branch: [current-branch-name]
+Status: [active|blocked|concluded|dead-end]
 
 ## Summary of This Iteration
 - **Work completed:** [Brief summary]
@@ -351,8 +409,8 @@ Failed to commit journal: [error message]
 
 You can manually commit with:
   git add autonomy/[goal-name]/iteration-NNNN-YYYY-MM-DD.md
-  git commit -m "journal: [goal-name] iteration NNNN"
-  git tag -a "autonomy/iteration-NNNN" -m "journal: [goal-name] iteration NNNN"
+  git commit -m "journal: [goal-name] iteration NNNN ..."
+  git tag -a "autonomy/[strategy-name]/iteration-NNNN" -m "journal: [goal-name] iteration NNNN"
 
 ## Summary of This Iteration
 - **Work completed:** [Brief summary]
@@ -415,8 +473,17 @@ This shows the section was considered, not forgotten.
 **Automatic commits to current branch:**
 - Journal file is committed to whatever branch you're currently on
 - Does NOT create new branch or switch branches
-- Uses commit message format: `journal: [goal-name] iteration NNNN`
-- Tags commit as `autonomy/iteration-NNNN` for easy navigation
+- Uses enhanced commit message format with:
+  - Brief summary (2-3 lines)
+  - Journal Summary section (4-6 sentences)
+  - Iteration Metadata section (status, metrics, blockers, next steps)
+- Tags commit as `autonomy/<strategy-name>/iteration-NNNN` for branch-aware navigation
+
+**Branch-aware tagging:**
+- On autonomy branches: Tag uses branch name (e.g., `autonomy/experiment-a/iteration-0015`)
+- On non-autonomy branches: Tag uses goal name (backward compatibility)
+- Each branch has its own iteration namespace
+- No tag collisions when multiple branches have same iteration number
 
 **Error handling:**
 - Git failures do NOT block iteration completion
@@ -430,9 +497,11 @@ This shows the section was considered, not forgotten.
 - Never: Other files in working directory
 
 **Tag benefits:**
-- Navigate to iteration: `git checkout autonomy/iteration-0042`
-- List all iterations: `git tag -l 'autonomy/*'`
+- Navigate to iteration on specific branch: `git checkout autonomy/experiment-a/iteration-0042`
+- List all iterations on a branch: `git tag -l 'autonomy/experiment-a/*'`
+- List all autonomy iterations: `git tag -l 'autonomy/*/*'`
 - Immutable history markers for CI/CD integration
+- Enables branch management commands to query git log for metadata
 
 ## Common Mistakes
 

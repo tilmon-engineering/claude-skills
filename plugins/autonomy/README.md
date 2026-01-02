@@ -29,6 +29,7 @@ This creates a system of record that enables the agent to understand where it's 
 
 ## Quick Start
 
+**Standard workflow:**
 ```bash
 # Create a new goal (one-time setup)
 /create-goal
@@ -55,6 +56,38 @@ This creates a system of record that enables the agent to understand where it's 
 /analyze-branch experiment-a "what we tried"
 ```
 
+**Slime mold strategy workflow (parallel exploration):**
+```bash
+# One-command setup for parallel exploration
+/slime
+
+# Start first real iteration
+/start-iteration
+
+# Work on the goal
+# ... do work ...
+
+# End iteration
+/end-iteration
+
+# Fork new exploration branch to try different approach
+/fork-iteration alternative-approach
+
+# Work on alternative branch
+/start-iteration
+# ... do work ...
+/end-iteration
+
+# Compare branches to see different outcomes
+/compare-branches [goal-name] alternative-approach
+
+# Extract insights from other branch
+/analyze-branch alternative-approach "optimization techniques"
+
+# List all exploration branches
+/list-branches recent
+```
+
 ## Commands
 
 ### `/create-goal`
@@ -67,6 +100,33 @@ One-time setup for a new open-ended goal.
 - Writes goal.md with goal definition
 
 **When to use:** Before starting your first iteration on a new goal
+
+### `/slime`
+
+One-command setup for the "slime mold strategy" - parallel exploration using autonomy branches as a genetic algorithm.
+
+**If no goal exists yet (full setup):**
+- Invokes `/create-goal` to define goal and create `autonomy/[goal-name]/` directory
+- Creates/updates `autonomy/CLAUDE.md` with slime mold strategy documentation
+- Invokes `/fork-iteration` to create initial branch `autonomy/[goal-name]`
+- Creates `iteration-0000-YYYY-MM-DD.md` as baseline setup journal
+- Makes git commit with tag `autonomy/[goal-name]/iteration-0000`
+
+**If goal already exists (idempotent):**
+- Updates `autonomy/CLAUDE.md` to ensure slime mold strategy description is current
+- Skips goal creation, branching, and iteration 0000
+
+**What is the slime mold strategy?**
+
+Like a slime mold organism extending multiple tendrils to find optimal paths, this strategy maintains parallel autonomy branches exploring different approaches to the same goal. Branches are NOT competing—they cooperate as part of the same organism. Use `/analyze-branch` to extract insights from other branches and incorporate them into your current work. Use `/compare-branches` to understand how different approaches diverged. The goal is to explore the solution space thoroughly and cross-pollinate insights across branches.
+
+**After running `/slime`:**
+- Run `/start-iteration` to begin iteration 0001 (first real work iteration)
+- Use `/fork-iteration <strategy-name>` to create additional exploration branches
+- Use `/analyze-branch <branch> <search>` to cross-pollinate learnings
+- Use `/compare-branches <branch-a> <branch-b>` to compare approaches
+
+**When to use:** When adopting parallel exploration strategy with multiple autonomy branches
 
 ### `/start-iteration`
 
@@ -147,6 +207,124 @@ Analyze another branch's iteration journals to extract findings and insights.
 /analyze-branch experiment-a "API optimization and performance improvements"
 ```
 
+## Branch Management Commands
+
+The autonomy plugin includes commands for managing exploration branches in the "slime mold strategy" workflow. These commands only operate on `autonomy/*` branches.
+
+### `/list-branches [optional-query]`
+
+Inventory all autonomy branches with flexible sorting, grouping, and filtering.
+
+**Arguments:**
+- `optional-query` - Free-text description of how to sort, group, and what information to display
+- If no query provided, defaults to: sort by most recent update, show all branches
+
+**Process:**
+- Finds all `autonomy/*` branches via git
+- Reads latest journal commit from each branch (commit messages, not files)
+- Dispatches branch-analyzer agent to generate Python script for computational analysis
+- Produces formatted markdown table with requested information
+
+**Examples:**
+```bash
+/list-branches
+/list-branches sort by most recent, show only active
+/list-branches group by status, show metrics
+/list-branches show branches updated in last 30 days
+```
+
+**Output:** Markdown table showing branch name, latest iteration, last update, status, metrics, and next steps
+
+### `/fork-iteration [iteration] <strategy-name>`
+
+Create new autonomy branch forked from current commit or specific past iteration.
+
+**Arguments:**
+- `iteration` (optional) - Iteration number (NNNN format) to fork from. If provided, searches current branch history for matching iteration tag. If omitted, forks from current HEAD.
+- `strategy-name` (required) - Name for new branch (kebab-case). Will become `autonomy/<strategy-name>`.
+
+**Process:**
+- Resolves fork point (iteration tag or current HEAD)
+- Validates fork point exists
+- Checks out fork point
+- Creates new branch `autonomy/<strategy-name>`
+- Reports success with next steps
+
+**Examples:**
+```bash
+# Fork from current commit
+/fork-iteration experiment-b
+
+# Fork from specific iteration in current branch history
+/fork-iteration 0015 experiment-b
+
+# Bootstrap autonomy workflow from non-autonomy branch
+git checkout main
+/fork-iteration initial-strategy
+```
+
+**Output:** Branch created message with next steps (`/start-iteration` to begin work)
+
+**Note:** This creates the branch but does NOT start an iteration. Iteration numbering is handled by `/start-iteration`.
+
+### `/branch-status <branch-name>`
+
+Detailed status report for single autonomy branch.
+
+**Arguments:**
+- `branch-name` (required) - Branch name to analyze. `autonomy/` prefix optional (added automatically if missing).
+
+**Process:**
+- Normalizes branch name (adds `autonomy/` prefix if missing)
+- Validates branch exists
+- Dispatches branch-analyzer agent to read all journal commits on branch
+- Agent generates Python script to analyze iteration timeline, metrics progression, status changes
+- Produces comprehensive report
+
+**Example:**
+```bash
+/branch-status experiment-a
+/branch-status autonomy/experiment-b
+```
+
+**Output:**
+- Complete iteration timeline with dates and status
+- Metrics progression over time (if applicable)
+- Blocker history
+- Current state assessment
+- Recommended next actions
+
+### `/compare-branches <branch-a> <branch-b>`
+
+Compare two autonomy branches to show different approaches and outcomes.
+
+**Arguments:**
+- `branch-a` (required) - First branch name. `autonomy/` prefix optional.
+- `branch-b` (required) - Second branch name. `autonomy/` prefix optional.
+
+**Process:**
+- Normalizes both branch names
+- Validates both branches exist
+- Uses `git merge-base` to find where branches diverged
+- Dispatches branch-analyzer agent for comparative analysis
+- Agent generates Python script for comparison
+- Produces report showing differences
+
+**Example:**
+```bash
+/compare-branches experiment-a experiment-b
+/compare-branches autonomy/usage-pricing autonomy/flat-enterprise
+```
+
+**Output:**
+- Where branches diverged (common ancestor)
+- Iteration timeline comparison
+- Metrics trajectories (if applicable)
+- Status comparison
+- Different decisions made
+- Outcomes on each branch
+- Cross-branch learning insights
+
 ## Directory Structure
 
 ```
@@ -200,18 +378,41 @@ Autonomy automatically commits journal files to git when ending an iteration:
 - `iteration-NNNN-YYYY-MM-DD.md` (always)
 - `summary.md` (when updated - every 5 iterations)
 
-**Commit format:**
+**Commit format (enhanced for branch management):**
 ```
 journal: [goal-name] iteration NNNN
 
 [2-3 line summary of work completed]
+
+## Journal Summary
+
+[4-6 sentence summary of iteration - what happened, what was learned, what changed]
+
+## Iteration Metadata
+
+Status: [active|blocked|concluded|dead-end]
+Metrics: [quantitative metrics or "None"]
+Blockers: [critical blockers or "None"]
+Next: [next iteration intention]
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-**Git tag:** `autonomy/iteration-NNNN` (annotated tag on commit)
+**Enhanced commit metadata:**
+- **Status** - Determined from Ending State: active (default), blocked (waiting on dependency), concluded (goal achieved), dead-end (approach invalidated)
+- **Metrics** - Quantitative progress indicators extracted from Ending State (e.g., "MRR: $62k (+12%)")
+- **Blockers** - Summary of current blockers from journal
+- **Next** - Next iteration intention/recommended action
+
+This metadata enables branch management commands to summarize branches without reading journal files.
+
+**Git tag (branch-aware):**
+- On autonomy branches: `autonomy/<branch-name>/iteration-NNNN` (e.g., `autonomy/experiment-a/iteration-0015`)
+- On non-autonomy branches: `autonomy/<goal-name>/iteration-NNNN` (backward compatibility)
+- Each branch has its own iteration namespace
+- No tag collisions when multiple branches have same iteration number
 
 **Branch behavior:**
 - Commits to current branch (does NOT create new branch)
@@ -219,10 +420,12 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - You control when to merge/push
 
 **Tag benefits:**
-- Navigate to specific iteration: `git checkout autonomy/iteration-0042`
-- List all iterations: `git tag -l 'autonomy/*'`
-- CI/CD integration: Trigger on `autonomy/iteration-*` tags
+- Navigate to iteration on specific branch: `git checkout autonomy/experiment-a/iteration-0042`
+- List all iterations on a branch: `git tag -l 'autonomy/experiment-a/*'`
+- List all autonomy iterations: `git tag -l 'autonomy/*/*'`
+- CI/CD integration: Trigger on `autonomy/*/iteration-*` tags
 - Immutable history markers
+- Enables branch management queries without reading journal files
 
 **Error handling:**
 - If git operations fail, iteration still completes
@@ -263,6 +466,17 @@ Invoked by `/create-goal` command. Handles:
 - Directory structure creation
 - goal.md initialization
 
+### `slime-strategy`
+
+Invoked by `/slime` command. Handles:
+- Checking if autonomy workflow already exists
+- Orchestrating creating-a-goal skill for new goals
+- Creating/updating autonomy/CLAUDE.md with slime mold strategy documentation
+- Orchestrating forking-iteration skill to create initial branch
+- Creating iteration-0000 baseline journal
+- Git commit and branch-aware tagging
+- Idempotent behavior (only updates CLAUDE.md if goal exists)
+
 ### `reviewing-progress`
 
 Invoked by `/review-progress` command. Handles:
@@ -278,6 +492,36 @@ Invoked by `/analyze-branch` command. Handles:
 - Extraction of iteration journals from target branch
 - Content searching based on user criteria
 - Report generation for cross-branch learning
+
+### `listing-branches`
+
+Invoked by `/list-branches` command. Handles:
+- Parsing user's query for sorting/grouping/filtering requirements
+- Dispatching branch-analyzer agent with query
+- Presenting formatted markdown table of all autonomy branches
+
+### `forking-iteration`
+
+Invoked by `/fork-iteration` command. Handles:
+- Parsing and validating strategy name
+- Resolving fork point (iteration tag or HEAD)
+- Checking out fork point and creating new autonomy branch
+- Direct git operations (no agent needed)
+
+### `analyzing-branch-status`
+
+Invoked by `/branch-status` command. Handles:
+- Normalizing and validating branch name
+- Dispatching branch-analyzer agent for comprehensive analysis
+- Presenting detailed status report for single branch
+
+### `comparing-branches`
+
+Invoked by `/compare-branches` command. Handles:
+- Normalizing and validating both branch names
+- Using git merge-base to find divergence point
+- Dispatching branch-analyzer agent for comparative analysis
+- Presenting comparison report
 
 ## Agents
 
@@ -298,6 +542,16 @@ Condenses older iterations into summary.md. Preserves:
 - Strategic pivots
 - Key learnings
 - Metric trends
+
+### `branch-analyzer` (Haiku)
+
+Analyzes autonomy branches via git operations and computational methods. Used by list-branches, branch-status, and compare-branches commands. Handles:
+- Reading git log data from autonomy branches
+- Parsing enhanced commit message metadata (status, metrics, blockers, next steps)
+- Generating Python scripts for computational analysis (sorting, filtering, grouping, comparison)
+- Executing Python scripts for precise results (never "eyeball it")
+- Formatting output as markdown tables and reports
+- Read-only operations (never checks out branches or modifies files)
 
 ## Integration with Other Plugins
 
@@ -354,19 +608,22 @@ git commit -m "initial commit: autonomy goal setup"
 **2. Spawn Experiment Branches**
 
 ```bash
-# Start first exploration path
-git checkout -b experiment-pricing-model-a
+# Start first exploration path using branch management
+/fork-iteration experiment-pricing-model-a
 /start-iteration
 # Intention: "Explore usage-based pricing with tiered caps"
 # ... work on this approach ...
 /end-iteration
 
 # Start parallel exploration path
-git checkout -b experiment-pricing-model-b
+/fork-iteration experiment-pricing-model-b
 /start-iteration
 # Intention: "Explore flat enterprise pricing with seat limits"
 # ... work on this approach ...
 /end-iteration
+
+# List all branches to see status
+/list-branches
 ```
 
 **3. Branches Evolve Independently**
@@ -411,12 +668,16 @@ Branch stops. Remains in git history for future analysis.
 **6. New Branches Spawn from Insights**
 
 ```bash
-# Spawn new branch incorporating learnings from both experiments
-git checkout -b experiment-simple-per-unit
+# Compare approaches to inform new direction
+/compare-branches experiment-pricing-model-a experiment-pricing-model-b
+
+# Fork new branch from iteration 0015 (divergence point)
+/fork-iteration 0015 experiment-simple-per-unit
 /start-iteration
 # Intention: "Pure per-unit pricing. Incorporating usage tracking
 #             from experiment-a and simplicity from experiment-b."
 
+# Extract specific learnings from each branch
 /analyze-branch experiment-pricing-model-a "usage tracking implementation"
 /analyze-branch experiment-pricing-model-b "simple pricing communication"
 ```
@@ -492,20 +753,29 @@ On `experiment-hybrid-caching`:
 Your git history becomes a **map of explored territory**:
 
 ```bash
-# List all experiment branches
-git branch -a
+# List all autonomy branches with status
+/list-branches
 
-# See iteration tags across all branches
-git tag -l 'autonomy/*'
+# See detailed status of specific branch
+/branch-status experiment-a
+
+# Compare two branches
+/compare-branches experiment-a experiment-b
+
+# List all iteration tags across all branches
+git tag -l 'autonomy/*/*'
+
+# List iterations on specific branch
+git tag -l 'autonomy/experiment-a/*'
 
 # View branch divergence points
 git log --graph --oneline --all
 
 # Jump to any iteration on any branch
-git checkout autonomy/iteration-0042  # From any branch's history
+git checkout autonomy/experiment-a/iteration-0042
 ```
 
-The repository preserves the **entire exploration**, not just the final answer. Future work can mine this history for insights.
+The repository preserves the **entire exploration**, not just the final answer. Future work can mine this history for insights using branch management commands.
 
 ## Best Practices
 
