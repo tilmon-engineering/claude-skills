@@ -88,6 +88,53 @@ This creates a system of record that enables the agent to understand where it's 
 /list-branches recent
 ```
 
+**Parallel agent workflow (with worktrees):**
+```bash
+# Terminal 1: Create first experiment with isolated worktree
+/fork-worktree experiment-pricing-a
+cd .worktrees/autonomy/experiment-pricing-a
+/start-iteration
+# Agent 1 works on usage-based pricing approach
+# ... do work ...
+/end-iteration
+
+# Terminal 2: Create second experiment (while agent 1 is still working)
+/fork-worktree experiment-pricing-b
+cd .worktrees/autonomy/experiment-pricing-b
+/start-iteration
+# Agent 2 works on flat enterprise pricing approach
+# ... do work ...
+/end-iteration
+
+# Terminal 3: Create third experiment
+/fork-worktree experiment-hybrid
+cd .worktrees/autonomy/experiment-hybrid
+/start-iteration
+# Agent 3 explores hybrid approach
+# ... do work ...
+/end-iteration
+
+# From any location: analyze and compare
+/list-worktrees                                    # See active worktrees
+/list-branches                                     # See all branches
+/compare-branches experiment-pricing-a experiment-pricing-b
+/analyze-branch experiment-pricing-a "successful strategies"
+
+# Clean up worktrees when done (branches persist)
+/remove-worktree experiment-pricing-a
+/remove-worktree experiment-pricing-b
+# experiment-hybrid continues in its worktree
+```
+
+**When to use worktrees:**
+- Running multiple Claude agents in parallel on different autonomy branches
+- Each agent needs isolated working directory
+- Testing multiple approaches simultaneously
+
+**When NOT to use worktrees:**
+- Single agent workflow (use `/fork-iteration` instead)
+- Working sequentially on different branches (just git checkout)
+
 ## Commands
 
 ### `/create-goal`
@@ -325,8 +372,102 @@ Compare two autonomy branches to show different approaches and outcomes.
 - Outcomes on each branch
 - Cross-branch learning insights
 
+### `/fork-worktree [iteration] <strategy-name>`
+
+Create new autonomy branch with dedicated worktree for parallel agent workflows.
+
+**Arguments:**
+- `iteration` (optional) - Iteration number to fork from (same as `/fork-iteration`)
+- `strategy-name` (required) - Name for branch and worktree (kebab-case)
+
+**Process:**
+- Detects repository root (works from main repo or within other worktrees)
+- Resolves fork point (iteration tag or current HEAD)
+- Creates branch `autonomy/<strategy-name>` with worktree at `.worktrees/autonomy/<strategy-name>/`
+- All worktrees created at repository root level (no nested worktrees)
+
+**Example:**
+```bash
+# Fork from current commit
+/fork-worktree experiment-b
+
+# Fork from specific iteration
+/fork-worktree 0015 experiment-c
+
+# Fork from within another worktree (creates sibling, not nested)
+cd .worktrees/autonomy/experiment-a
+/fork-worktree experiment-d  # Creates .worktrees/autonomy/experiment-d/ at root
+```
+
+**Next steps:**
+```bash
+cd .worktrees/autonomy/<strategy-name>
+/start-iteration
+```
+
+**Difference from `/fork-iteration`:**
+- `/fork-iteration`: Creates branch in current working directory
+- `/fork-worktree`: Creates branch + isolated worktree for parallel work
+- Use worktrees for running multiple agents simultaneously
+
+### `/remove-worktree [--force] <strategy-name>`
+
+Safely remove autonomy worktree while preserving branch and history.
+
+**Arguments:**
+- `--force` (optional) - Skip uncommitted changes check and force removal
+- `strategy-name` (required) - Worktree to remove (without `autonomy/` prefix)
+
+**Process:**
+- Detects repository root
+- Validates worktree exists
+- Checks for uncommitted changes (unless `--force`)
+- Removes worktree directory
+- Prunes git metadata
+
+**Example:**
+```bash
+# Safe removal (fails if uncommitted changes)
+/remove-worktree experiment-b
+
+# Force removal (discards uncommitted changes)
+/remove-worktree --force experiment-b
+```
+
+**What gets removed:**
+- Worktree directory `.worktrees/autonomy/<strategy-name>/`
+- Git worktree metadata
+
+**What persists:**
+- Branch `autonomy/<strategy-name>` and all commits
+- All iteration tags
+- Git history (can checkout branch later or create new worktree)
+
+### `/list-worktrees`
+
+List all autonomy worktrees with status and location.
+
+**Process:**
+- Finds all git worktrees
+- Filters to autonomy worktrees (`.worktrees/autonomy/`)
+- Displays formatted table
+
+**Example output:**
+```
+Autonomy Worktrees:
+
+Branch                    Path                                      HEAD       Locked
+autonomy/experiment-a     .worktrees/autonomy/experiment-a          a1b2c3d
+autonomy/experiment-b     .worktrees/autonomy/experiment-b          d4e5f6g    🔒
+
+Total: 2 autonomy worktrees
+```
+
+**Note:** This lists worktrees only, not all branches. Use `/list-branches` to see all autonomy branches (including those without worktrees).
+
 ## Directory Structure
 
+**Main repository structure:**
 ```
 autonomy/[goal-name]/
 ├── goal.md                          # Goal definition and metrics
@@ -336,7 +477,31 @@ autonomy/[goal-name]/
 └── iteration-NNNN-YYYY-MM-DD.md    # Nth iteration journal (4-digit numbering)
 ```
 
-**Iteration numbering:** Uses 4-digit zero-padded format (0001-9999) to support up to 9999 iterations.
+**With worktrees (for parallel agent workflows):**
+```
+project-root/
+├── .git/                            # Git repository metadata
+├── .worktrees/                      # Worktree container (gitignored)
+│   └── autonomy/                    # Autonomy-specific worktrees
+│       ├── experiment-a/            # Worktree for autonomy/experiment-a
+│       │   ├── autonomy/
+│       │   │   └── goal-name/
+│       │   │       ├── goal.md
+│       │   │       └── iteration-0001-YYYY-MM-DD.md
+│       │   └── [other project files]
+│       └── experiment-b/            # Worktree for autonomy/experiment-b
+│           └── autonomy/
+│               └── goal-name/
+│                   └── iteration-0001-YYYY-MM-DD.md
+└── autonomy/                        # Main repo autonomy work (optional)
+    └── goal-name/
+```
+
+**Notes:**
+- Iteration numbering: 4-digit zero-padded format (0001-9999) supports up to 9999 iterations
+- Each worktree is a complete working copy with own `autonomy/` directory
+- All worktrees share same `.git` directory (commits visible across all worktrees)
+- Add `.worktrees/` to `.gitignore` to prevent committing worktree directories
 
 ## Iteration Journal Format
 
