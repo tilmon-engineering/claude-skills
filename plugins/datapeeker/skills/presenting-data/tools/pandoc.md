@@ -265,12 +265,12 @@ Document content starts here...
   doi = {10.1234/jds.2024.15.3}
 }
 
-@misc{tilmon2025,
+@misc{example2025,
   author = {Tilmon Engineering},
   title = {DataPeeker: SQL Analysis Tool},
   year = {2025},
   version = {2.1.0},
-  url = {https://github.com/tilmon/datapeeker},
+  url = {https://github.com/example-org/datapeeker},
   note = {Accessed: 2025-11-25}
 }
 
@@ -287,7 +287,7 @@ Document content starts here...
 ```markdown
 According to recent research [@smith2024], data quality is crucial.
 
-Multiple citations [@smith2024; @tilmon2025] can be combined.
+Multiple citations [@smith2024; @example2025] can be combined.
 
 Cite with page numbers [@smith2024, pp. 45-47].
 
@@ -906,7 +906,7 @@ Further analysis (Section @sec:retention) examines sustainability.
 
 1. Clone analysis repository:
    \```bash
-   git clone github.com/tilmon/q4-analysis
+   git clone github.com/example-org/q4-analysis
    cd q4-analysis
    \```
 

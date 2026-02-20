@@ -259,7 +259,7 @@ pip install -r requirements.txt
 
 **2. Install DataPeeker**:
 \```bash
-git clone https://github.com/tilmon/datapeeker.git
+git clone https://github.com/example-org/datapeeker.git
 cd datapeeker
 pip install -e .
 \```
@@ -340,7 +340,7 @@ Threshold: outlier_score > 3
 ### Step 1: Clone Repository
 
 \```bash
-git clone https://github.com/tilmon/q4-analysis.git
+git clone https://github.com/example-org/q4-analysis.git
 cd q4-analysis
 \```
 
@@ -432,7 +432,7 @@ sha256sum analysis/q4-2024/01-findings.md
 
 ## Repository Information
 
-**Repository URL**: https://github.com/tilmon/q4-analysis
+**Repository URL**: https://github.com/example-org/q4-analysis
 
 **Commit Hash**: abc123def456 (main branch)
 
@@ -440,13 +440,13 @@ sha256sum analysis/q4-2024/01-findings.md
 
 **License**: MIT License
 
-**Contact**: data-team@tilmon.com for questions or access requests
+**Contact**: data-team@example.com for questions or access requests
 
 ## Data Archival
 
 **Long-term Preservation**:
-- **Primary**: GitHub repository (github.com/tilmon/q4-analysis)
-- **Secondary**: Company internal backup (backup.tilmon.com/analysis/q4-2024/)
+- **Primary**: GitHub repository (github.com/example-org/q4-analysis)
+- **Secondary**: Company internal backup (backup.example.com/analysis/q4-2024/)
 - **Tertiary**: Zenodo DOI (10.5281/zenodo.XXXXXX) for public data
 
 **Retention Policy**: Maintained for 7 years per company policy
@@ -458,17 +458,17 @@ If referencing this analysis, please cite as:
 \```
 Analytics Team (2025). West Coast Expansion Analysis: Q4 2024
 Performance Evaluation. Tilmon Engineering.
-https://github.com/tilmon/q4-analysis
+https://github.com/example-org/q4-analysis
 \```
 
 **BibTeX**:
 \```bibtex
-@techreport{tilmon_q4_analysis_2025,
+@techreport{example_q4_analysis_2025,
   author = {{Analytics Team}},
   title = {West Coast Expansion Analysis: Q4 2024 Performance Evaluation},
   institution = {Tilmon Engineering},
   year = {2025},
-  url = {https://github.com/tilmon/q4-analysis},
+  url = {https://github.com/example-org/q4-analysis},
   note = {Version 1.0.0. Commit: abc123def456}
 }
 \```
@@ -707,7 +707,7 @@ This analysis was conducted following reproducible research principles.
 All data sources, SQL queries, analysis code, and visualization scripts
 are available in the public repository:
 
-**Repository**: https://github.com/tilmon/q4-analysis
+**Repository**: https://github.com/example-org/q4-analysis
 **Version**: v1.0.0 (Commit: abc123def456)
 **License**: MIT
 
@@ -727,7 +727,7 @@ Analysis was tested for reproducibility on macOS 14.6, Ubuntu 22.04,
 and Windows 11 systems. All outputs matched expected checksums within
 numerical precision limits (±0.01%).
 
-Questions or issues: data-team@tilmon.com
+Questions or issues: data-team@example.com
 ```
 
 ---

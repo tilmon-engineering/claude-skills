@@ -419,7 +419,7 @@ going forward.
 
 ### Documentation
 - Full methodology: [Technical Whitepaper](./whitepaper.pdf)
-- Analysis repo: [github.com/tilmon/q4-analysis](https://github.com/tilmon/q4-analysis)
+- Analysis repo: [github.com/example-org/q4-analysis](https://github.com/example-org/q4-analysis)
 - DataPeeker version: 2.1.0
 
 ### References
@@ -440,7 +440,7 @@ Business Analytics." *Data Science Quarterly*, 8(2), 112-128.
 
 [@datapeeker2025] Tilmon Engineering. (2025). *DataPeeker:
 SQL Analysis Tool* (Version 2.1.0). Retrieved from
-https://github.com/tilmon/datapeeker
+https://github.com/example-org/datapeeker
 
 [@sales_db2025] Tilmon Engineering. (2025). *Production Sales
 Metrics Database* [analytics_prod.sales_metrics].
@@ -489,7 +489,7 @@ ORDER BY year, total_revenue DESC
 - Table: sales_metrics
 
 **Reproducibility:**
-1. Clone analysis repository: `git clone github.com/tilmon/q4-analysis`
+1. Clone analysis repository: `git clone github.com/example-org/q4-analysis`
 2. Install dependencies: `pip install -r requirements.txt`
 3. Set database credentials: `export DB_CONN=<connection_string>`
 4. Run analysis: `python scripts/q4_regional.py`

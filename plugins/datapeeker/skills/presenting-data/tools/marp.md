@@ -674,9 +674,9 @@ Query execution:
 
 **Full Technical Report**: [Whitepaper](./whitepaper.pdf)
 
-**Analysis Repository**: [github.com/tilmon/q4-analysis](https://github.com/tilmon/q4-analysis)
+**Analysis Repository**: [github.com/example-org/q4-analysis](https://github.com/example-org/q4-analysis)
 
-**Contact**: data-team@tilmon.com
+**Contact**: data-team@example.com
 
 ---
 
@@ -799,7 +799,7 @@ All outliers reviewed and validated as legitimate high-value transactions.
 
 ```bash
 # Clone repository
-git clone github.com/tilmon/q4-analysis
+git clone github.com/example-org/q4-analysis
 
 # Install dependencies
 pip install -r requirements.txt

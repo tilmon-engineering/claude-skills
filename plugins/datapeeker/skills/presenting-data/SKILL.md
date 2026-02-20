@@ -439,7 +439,7 @@ Proper citation enables:
   title = {DataPeeker: SQL Analysis Tool},
   year = {2025},
   version = {2.1.0},
-  url = {https://github.com/tilmon/datapeeker}
+  url = {https://github.com/example-org/datapeeker}
 }
 ```
 
@@ -472,7 +472,7 @@ Reproducible research requires documentation of:
 - **Operating System**: macOS 14.6.0
 
 ### Query Repository
-- **Location**: `github.com/tilmon/analysis/queries/q4_sales.sql`
+- **Location**: `github.com/example-org/analysis/queries/q4_sales.sql`
 - **Commit Hash**: abc123def456
 - **Execution Time**: 3.2 seconds
 - **Rows Returned**: 50,000
@@ -484,7 +484,7 @@ Reproducible research requires documentation of:
 - **Cross-Validation**: Results match source system aggregate queries
 
 ### Reproducibility Instructions
-1. Clone repository: `git clone github.com/tilmon/analysis`
+1. Clone repository: `git clone github.com/example-org/analysis`
 2. Install dependencies: `pip install -r requirements.txt`
 3. Run analysis: `python scripts/q4_analysis.py`
 4. View results: `analysis/q4-2024/01-findings.md`
@@ -578,7 +578,7 @@ pandoc whitepaper.md \
 
 For detailed methodology and reproducibility:
 → [Technical Whitepaper](./whitepaper.pdf)
-→ [GitHub Repository](https://github.com/tilmon/analysis)
+→ [GitHub Repository](https://github.com/example-org/analysis)
 ```
 
 **File Organization:**

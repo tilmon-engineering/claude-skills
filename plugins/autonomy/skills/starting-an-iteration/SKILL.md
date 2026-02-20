@@ -19,7 +19,7 @@ Use this skill when:
 - Need to load context from previous conversation sessions
 
 **DO NOT use for:**
-- Closed goals with definition of done (use ed3d-superpowers workflow instead)
+- Closed goals with definition of done (use [ed3d-plugins](https://github.com/ed3dai/ed3d-plugins) plan-and-execute workflow instead)
 - First-time brainstorming (use brainstorming skill first)
 - One-off tasks that don't need iteration tracking
 

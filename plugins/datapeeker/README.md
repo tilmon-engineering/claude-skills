@@ -255,10 +255,4 @@ To improve DataPeeker skills:
 
 ## License
 
-UNLICENSED - Internal use for Tilmon Engineering
-
-## Contact
-
-**Tilmon Engineering**
-Email: team@tilmonengineering.com
-Repository: https://github.com/tilmon-engineering/tilmon-eng-skills
+MIT - See [LICENSE](../../LICENSE) for details.

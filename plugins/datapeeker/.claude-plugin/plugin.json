@@ -3,12 +3,11 @@
   "description": "Structured research methods for AI agents - hypothesis testing, exploratory analysis, comparative analysis, and qualitative research",
   "version": "1.0.0",
   "author": {
-    "name": "Tilmon Engineering",
-    "email": "team@tilmonengineering.com"
+    "name": "Tilmon Engineering"
   },
-  "homepage": "https://github.com/tilmon-engineering/tilmon-eng-skills",
-  "repository": "https://github.com/tilmon-engineering/tilmon-eng-skills",
-  "license": "UNLICENSED",
+  "homepage": "https://github.com/tilmon-engineering/claude-skills",
+  "repository": "https://github.com/tilmon-engineering/claude-skills",
+  "license": "MIT",
   "keywords": [
     "data-analysis",
     "research-methods",

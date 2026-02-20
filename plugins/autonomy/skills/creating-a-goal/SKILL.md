@@ -20,7 +20,7 @@ Use this skill when:
 
 **DO NOT use for:**
 - Continuing existing goal (use starting-an-iteration instead)
-- Closed goals with definition of done (use ed3d-superpowers workflow)
+- Closed goals with definition of done (use [ed3d-plugins](https://github.com/ed3dai/ed3d-plugins) plan-and-execute workflow)
 
 ## Quick Reference
 
@@ -196,14 +196,14 @@ Verify goal is truly open-ended:
 - "Improve Z" - never fully complete
 
 **Bad examples:**
-- "Build authentication system" - has done state (use ed3d-superpowers)
+- "Build authentication system" - has done state (use ed3d-plugins plan-and-execute)
 - "Fix bug #123" - has done state
 - "Write documentation" - has done state
 
 If user suggests closed goal, guide them:
 ```
 "This goal seems to have a clear completion state. For goals with a definition of 'done',
-consider using the ed3d-superpowers development workflow instead.
+consider using the [ed3d-plugins](https://github.com/ed3dai/ed3d-plugins) plan-and-execute workflow instead.
 
 Autonomy is designed for never-ending optimization and improvement goals.
 

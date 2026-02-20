@@ -1,6 +1,6 @@
-# Tilmon Engineering Skills Marketplace
+# Claude Skills Marketplace
 
-Institutional knowledge marketplace powering Tilmon Engineering's AI agent team.
+Institutional knowledge marketplace for AI agent teams, maintained by Tilmon Engineering.
 
 ## Overview
 
@@ -24,23 +24,33 @@ Structured research methods for AI agents conducting rigorous, reproducible data
 
 [View plugin documentation →](./plugins/datapeeker/README.md)
 
+### Autonomy - Open-Ended Goal Pursuit
+
+Enable AI agents to iteratively self-direct in pursuit of open-ended goals with state continuity across conversations through iteration journals.
+
+**Version:** 1.0.0
+
+**Key capabilities:**
+- Iteration journals for state continuity across conversations
+- Slime mold strategy for parallel exploration via git branches
+- Branch management for comparing and cross-pollinating experiments
+- Git worktree support for parallel agent workflows
+
+[View plugin documentation →](./plugins/autonomy/README.md)
+
 ## Installation
 
-This marketplace is designed for internal use by Tilmon Engineering teams. To install:
+Install from GitHub:
 
-1. Clone this repository
-2. Install the marketplace in Claude Code:
-   ```bash
-   claude plugin install /path/to/tilmon-eng-skills
-   ```
+```bash
+claude plugin install tilmon-engineering/claude-skills
+```
 
-## Future Plugins
+**Strongly recommended dependency:** [ed3d-plugins](https://github.com/ed3dai/ed3d-plugins) provides plan-and-execute workflows, brainstorming, TDD, and other development skills that complement these plugins.
 
-Planned additions to the marketplace:
-
-- **Security Analysis** - Security audit workflows and vulnerability assessment
-- **Customer Service** - Customer interaction patterns and support protocols
-- **Knowledge Management** - Documentation standards and knowledge capture methods
+```bash
+claude plugin install ed3dai/ed3d-plugins
+```
 
 ## Contributing
 
@@ -69,9 +79,4 @@ plugins/[plugin-name]/
 
 ## License
 
-UNLICENSED - Internal use only for Tilmon Engineering
-
-## Contact
-
-**Tilmon Engineering**
-Email: team@tilmonengineering.com
+MIT - See [LICENSE](./LICENSE) for details.

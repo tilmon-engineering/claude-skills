@@ -13,7 +13,7 @@ Enable AI agents to iteratively self-direct in pursuit of open-ended goals with 
 - Optimize application performance
 - Grow monthly active users
 
-**Not for:** Closed goals with clear completion criteria (use ed3d-superpowers workflow instead)
+**Not for:** Closed goals with clear completion criteria (use [ed3d-plugins](https://github.com/ed3dai/ed3d-plugins) plan-and-execute workflow instead)
 
 ## Core Concept: Iteration Journals
 
@@ -1023,7 +1023,7 @@ The repository preserves the **entire exploration**, not just the final answer. 
 
 ## Development
 
-See [creating-a-plugin](../../ed3d-extending-claude/skills/creating-a-plugin/) skill for plugin development guidance.
+See the [ed3d-plugins](https://github.com/ed3dai/ed3d-plugins) creating-a-plugin skill for plugin development guidance.
 
 **Testing locally:**
 ```bash
@@ -1034,10 +1034,4 @@ See [creating-a-plugin](../../ed3d-extending-claude/skills/creating-a-plugin/) s
 
 ## License
 
-UNLICENSED - Internal use only
-
-## Author
-
-Tilmon Engineering
-- Email: team@tilmonengineering.com
-- Repository: https://github.com/tilmon-engineering/tilmon-eng-skills
+MIT - See [LICENSE](../../LICENSE) for details.

@@ -65,7 +65,7 @@ BibTeX is the standard format for academic and technical publications. Use with 
 
 **Example**:
 ```bibtex
-@misc{tilmon_sales_db_2025,
+@misc{example_sales_db_2025,
   author = {Tilmon Engineering},
   title = {Production Sales Metrics Database},
   year = {2025},
@@ -76,7 +76,7 @@ BibTeX is the standard format for academic and technical publications. Use with 
 
 **Cite in text**:
 ```markdown
-Data was extracted from the production database [@tilmon_sales_db_2025].
+Data was extracted from the production database [@example_sales_db_2025].
 ```
 
 ### File-Based Data Sources
@@ -137,7 +137,7 @@ Data was extracted from the production database [@tilmon_sales_db_2025].
   title = {Q4 Regional Revenue Analysis Query},
   year = {2025},
   howpublished = {SQL query},
-  note = {File: queries/q4\_revenue.sql. Execution time: 2.3s. Repository: github.com/tilmon/analysis}
+  note = {File: queries/q4\_revenue.sql. Execution time: 2.3s. Repository: github.com/example-org/analysis}
 }
 ```
 
@@ -156,7 +156,7 @@ that aggregates transactions by geographic region.
   title = {DataPeeker: SQL Analysis Tool},
   year = {2025},
   version = {2.1.0},
-  url = {https://github.com/tilmon/datapeeker},
+  url = {https://github.com/example-org/datapeeker},
   note = {MIT License}
 }
 ```
@@ -239,7 +239,7 @@ that aggregates transactions by geographic region.
 
 **Company Reports**:
 ```bibtex
-@techreport{tilmon_strategy_2024,
+@techreport{example_strategy_2024,
   author = {Strategic Planning Team},
   title = {2024 Geographic Expansion Strategy},
   institution = {Tilmon Engineering},
@@ -299,7 +299,7 @@ Alternative to BibTeX, useful for web-based tools and JSON workflows.
 
 ```json
 {
-  "id": "tilmon_sales_db_2025",
+  "id": "example_sales_db_2025",
   "type": "dataset",
   "author": [
     {"literal": "Tilmon Engineering"}
@@ -323,7 +323,7 @@ Alternative to BibTeX, useful for web-based tools and JSON workflows.
   "title": "DataPeeker: SQL Analysis Tool",
   "version": "2.1.0",
   "issued": {"date-parts": [[2025]]},
-  "URL": "https://github.com/tilmon/datapeeker"
+  "URL": "https://github.com/example-org/datapeeker"
 }
 ```
 
@@ -377,7 +377,7 @@ Recent research [-@jones2024] demonstrates...
 
 **Database**:
 ```markdown
-Data was extracted from the production database [@tilmon_sales_db_2025]
+Data was extracted from the production database [@example_sales_db_2025]
 covering the period October 1 - December 31, 2024.
 ```
 
@@ -391,7 +391,7 @@ region and calculates summary statistics.
 **Multiple Data Sources**:
 ```markdown
 Analysis combined data from three sources: production database
-[@tilmon_sales_db_2025], customer demographics [@customer_data_2024],
+[@example_sales_db_2025], customer demographics [@customer_data_2024],
 and external market data [@competitor_pricing_2025].
 ```
 
@@ -420,7 +420,7 @@ test [@wilcoxon1945] with α = 0.05.
 % DATA SOURCES
 % ===================================================================
 
-@misc{tilmon_sales_db_2025,
+@misc{example_sales_db_2025,
   author = {Tilmon Engineering},
   title = {Production Sales Metrics Database},
   year = {2025},
@@ -445,7 +445,7 @@ test [@wilcoxon1945] with α = 0.05.
   title = {Q4 Regional Revenue Analysis Query},
   year = {2025},
   howpublished = {SQL query},
-  note = {File: queries/q4\_revenue.sql. Execution: 2.3s. Repo: github.com/tilmon/analysis}
+  note = {File: queries/q4\_revenue.sql. Execution: 2.3s. Repo: github.com/example-org/analysis}
 }
 
 % ===================================================================
@@ -457,7 +457,7 @@ test [@wilcoxon1945] with α = 0.05.
   title = {DataPeeker: SQL Analysis Tool},
   year = {2025},
   version = {2.1.0},
-  url = {https://github.com/tilmon/datapeeker}
+  url = {https://github.com/example-org/datapeeker}
 }
 
 @software{pandas_2024,
@@ -522,7 +522,7 @@ test [@wilcoxon1945] with α = 0.05.
 % INTERNAL REPORTS
 % ===================================================================
 
-@techreport{tilmon_strategy_2024,
+@techreport{example_strategy_2024,
   author = {Strategic Planning Team},
   title = {2024 Geographic Expansion Strategy},
   institution = {Tilmon Engineering},
@@ -587,7 +587,7 @@ pandoc whitepaper.md \
 
 ✅ **Cite all data sources**
 ```markdown
-Data extracted from [@tilmon_sales_db_2025] covering Q4 2024.
+Data extracted from [@example_sales_db_2025] covering Q4 2024.
 ```
 
 ✅ **Include query timestamps**
@@ -602,7 +602,7 @@ version = {2.1.0}
 
 ✅ **Link to repositories**
 ```bibtex
-url = {https://github.com/tilmon/analysis}
+url = {https://github.com/example-org/analysis}
 ```
 
 ✅ **Use consistent citation keys**
@@ -698,7 +698,7 @@ aggregated results and methodology are fully documented in Appendix A.
 
 **2. Add citations to markdown**:
 ```markdown
-Data from production database [@tilmon_sales_db_2025] shows...
+Data from production database [@example_sales_db_2025] shows...
 ```
 
 **3. Convert with --citeproc**:
@@ -784,15 +784,15 @@ pandoc input.md --citeproc --bibliography refs.bib -s -o output.pdf
 **Solution**: Check citation key matches BibTeX entry
 ```bibtex
 % BibTeX entry
-@misc{tilmon_data_2025,
+@misc{example_data_2025,
   ...
 }
 
 % Correct citation in markdown
-[@tilmon_data_2025]
+[@example_data_2025]
 
 % Wrong
-[@tilmon_data]  # Missing _2025
+[@example_data]  # Missing _2025
 ```
 
 ### Issue: Special characters in BibTeX

@@ -11,8 +11,4 @@ import-csvs:
     echo ""
     echo "Database: data/analytics.db"
 
-# Start a new analysis session
-start-analysis PROCESS NAME:
-    python scripts/start_analysis.py {{PROCESS}} {{NAME}}
-    echo 'IMPORTANT: Complete the template at `analysis/{{PROCESS}}/{{NAME}}/00 - overview.md` before proceeding'
 
