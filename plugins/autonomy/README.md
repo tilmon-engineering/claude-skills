@@ -600,7 +600,7 @@ This metadata enables branch management commands to summarize branches without r
 
 ## Skills
 
-### `starting-an-iteration`
+### `start-iteration`
 
 Invoked by `/start-iteration` command. Handles:
 - Goal detection and setup
@@ -608,7 +608,7 @@ Invoked by `/start-iteration` command. Handles:
 - Agent delegation for journal reading and summarization
 - State presentation to user
 
-### `ending-an-iteration`
+### `end-iteration`
 
 Invoked by `/end-iteration` command. Handles:
 - Conversation review for key information
@@ -617,32 +617,32 @@ Invoked by `/end-iteration` command. Handles:
 - Git commit and tagging (automatic)
 - Completion announcement
 
-### `checkpointing-an-iteration`
+### `checkpoint-iteration`
 
 Invoked by `/checkpoint-iteration` command. Handles:
 - Mid-iteration progress capture
 - Incremental journal updates
 - Context preservation before compaction
 
-### `creating-a-goal`
+### `create-goal`
 
 Invoked by `/create-goal` command. Handles:
 - Goal statement collection
 - Directory structure creation
 - goal.md initialization
 
-### `slime-strategy`
+### `slime`
 
 Invoked by `/slime` command. Handles:
 - Checking if autonomy workflow already exists
-- Orchestrating creating-a-goal skill for new goals
+- Orchestrating create-goal skill for new goals
 - Creating/updating autonomy/CLAUDE.md with slime mold strategy documentation
-- Orchestrating forking-iteration skill to create initial branch
+- Orchestrating fork-iteration skill to create initial branch
 - Creating iteration-0000 baseline journal
 - Git commit and branch-aware tagging
 - Idempotent behavior (only updates CLAUDE.md if goal exists)
 
-### `reviewing-progress`
+### `review-progress`
 
 Invoked by `/review-progress` command. Handles:
 - Full history reading
@@ -650,7 +650,7 @@ Invoked by `/review-progress` command. Handles:
 - Honest assessment with recommendations
 - Strategic guidance
 
-### `analyzing-branches`
+### `analyze-branch`
 
 Invoked by `/analyze-branch` command. Handles:
 - Git merge-base operations to find divergence point
@@ -658,14 +658,14 @@ Invoked by `/analyze-branch` command. Handles:
 - Content searching based on user criteria
 - Report generation for cross-branch learning
 
-### `listing-branches`
+### `list-branches`
 
 Invoked by `/list-branches` command. Handles:
 - Parsing user's query for sorting/grouping/filtering requirements
 - Dispatching branch-analyzer agent with query
 - Presenting formatted markdown table of all autonomy branches
 
-### `forking-iteration`
+### `fork-iteration`
 
 Invoked by `/fork-iteration` command. Handles:
 - Parsing and validating strategy name
@@ -673,14 +673,14 @@ Invoked by `/fork-iteration` command. Handles:
 - Checking out fork point and creating new autonomy branch
 - Direct git operations (no agent needed)
 
-### `analyzing-branch-status`
+### `branch-status`
 
 Invoked by `/branch-status` command. Handles:
 - Normalizing and validating branch name
 - Dispatching branch-analyzer agent for comprehensive analysis
 - Presenting detailed status report for single branch
 
-### `comparing-branches`
+### `compare-branches`
 
 Invoked by `/compare-branches` command. Handles:
 - Normalizing and validating both branch names

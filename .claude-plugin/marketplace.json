@@ -20,7 +20,7 @@
     {
       "name": "autonomy",
       "description": "Enable AI agents to iteratively self-direct in pursuit of open-ended goals with state continuity across conversations through iteration journals",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./plugins/autonomy",
       "author": {
         "name": "Tilmon Engineering"
