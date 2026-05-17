@@ -1,0 +1,20 @@
+{
+  "name": "outcomes",
+  "version": "0.1.0",
+  "description": "OST (Outcome / Strategy / Tactic) framework for falsifiable goal decomposition - schema conventions and discipline for the `agents` TypeDB database",
+  "author": {
+    "name": "Tilmon Engineering"
+  },
+  "homepage": "https://github.com/tilmon-engineering/claude-skills",
+  "repository": "https://github.com/tilmon-engineering/claude-skills",
+  "license": "MIT",
+  "keywords": [
+    "ost",
+    "outcomes",
+    "strategy",
+    "tactics",
+    "goal-decomposition",
+    "falsifiability",
+    "knowledge-graph"
+  ]
+}

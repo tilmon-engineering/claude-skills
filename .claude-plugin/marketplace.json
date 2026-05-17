@@ -20,12 +20,32 @@
     {
       "name": "autonomy",
       "description": "Enable AI agents to iteratively self-direct in pursuit of open-ended goals with state continuity across conversations through iteration journals",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "source": "./plugins/autonomy",
       "author": {
         "name": "Tilmon Engineering"
       },
       "keywords": ["autonomy", "iteration", "goal-pursuit", "state-continuity", "journal", "open-ended-goals"]
+    },
+    {
+      "name": "semantic-db",
+      "description": "Idiomatic interaction with TypeDB 3.x semantic databases via the typedb MCP tools - schema-first workflow, transaction discipline, and 3.x syntax guardrails",
+      "version": "0.1.0",
+      "source": "./plugins/semantic-db",
+      "author": {
+        "name": "Tilmon Engineering"
+      },
+      "keywords": ["typedb", "typeql", "semantic-database", "knowledge-graph", "mcp"]
+    },
+    {
+      "name": "outcomes",
+      "description": "OST (Outcome / Strategy / Tactic) framework for falsifiable goal decomposition - schema conventions and discipline for the agents TypeDB database",
+      "version": "0.1.0",
+      "source": "./plugins/outcomes",
+      "author": {
+        "name": "Tilmon Engineering"
+      },
+      "keywords": ["ost", "outcomes", "strategy", "tactics", "goal-decomposition", "falsifiability", "knowledge-graph"]
     }
   ]
 }

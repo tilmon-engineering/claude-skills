@@ -1,0 +1,18 @@
+{
+  "name": "semantic-db",
+  "version": "0.1.0",
+  "description": "Idiomatic interaction with TypeDB 3.x semantic databases via the typedb MCP tools - schema-first workflow, transaction discipline, and 3.x syntax guardrails",
+  "author": {
+    "name": "Tilmon Engineering"
+  },
+  "homepage": "https://github.com/tilmon-engineering/claude-skills",
+  "repository": "https://github.com/tilmon-engineering/claude-skills",
+  "license": "MIT",
+  "keywords": [
+    "typedb",
+    "typeql",
+    "semantic-database",
+    "knowledge-graph",
+    "mcp"
+  ]
+}

@@ -1,5 +1,28 @@
 # Changelog
 
+## semantic-db 0.1.0
+
+Initial release. A substrate skill, `using-typedb`, teaching agents to interact with TypeDB 3.x databases through the `typedb` MCP tools.
+
+**New:**
+- `using-typedb` skill: schema-first workflow, transaction-type discipline (`read`/`write`/`schema`), TypeQL 3.x syntax (fetch, attribute subtyping, `@card`/`@regex`/`@values`), `define` vs `redefine` vs `undefine` rules, two-stage delete pattern under `@card(1..1)`, and the MCP→JSON→TypeQL regex double-escape gotcha.
+
+## outcomes 0.1.0
+
+Initial release. A domain skill, `using-ost-framework`, encoding the OST (Outcome / Strategy / Tactic) Framework as implemented in the `agents` TypeDB database on edge-01. Pairs with `semantic-db` for query mechanics.
+
+**New:**
+- `using-ost-framework` skill: three-layer rubric with diagnostic gates, falsifiability discipline (hypothesis + invalidation trigger + deadline + lifecycle on every link), structured Task fields, AssetTag URI conventions, ID allocation patterns, canonical read/write workflows, and an explicit refusal list for vague hypotheses, trade-off-free strategies, and asset-less tactics.
+
+## autonomy 1.1.1
+
+Reliability fix for the `journal-summarizer` subagent, which previously failed to write `summary.md` in many cases (Haiku returning prose instead of calling `Write`, ambiguous relative paths, and brittle "rewrite the whole summary" semantics).
+
+**Changed:**
+- Reframed `summary.md` as an append-only chronological log of 5-iteration windows. Each milestone (iterations 5, 10, 15, …) appends one ~2-paragraph section; older sections are never rewritten.
+- `journal-summarizer` now uses Sonnet (was Haiku), gained the `Edit` tool, and has an explicit positive output contract: must end its turn with a successful `Edit`/`Write` tool call.
+- `end-iteration` Step 4 now passes absolute paths for `summary.md` and the 5 window journal files to the subagent, plus an explicit create-vs-append fork.
+
 ## autonomy 1.1.0
 
 Convert command wrappers to user-invocable skills. The 14 wrapper commands in `plugins/autonomy/commands/` were thin pass-throughs to skills with no additional logic; they have been removed and the underlying skills renamed to match the old slash names. User-facing slash names are unchanged (`/start-iteration`, `/slime`, `/fork-iteration`, etc.) but now resolve directly to skills.
