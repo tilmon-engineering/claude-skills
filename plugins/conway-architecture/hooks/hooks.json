@@ -1,0 +1,17 @@
+{
+  "description": "Conway Architecture: enforce that file writes/edits respect each domain agent's declared owned_paths in .agents/<name>/AGENTS.md. No-op in projects without a .agents/ directory.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/enforce-ownership.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

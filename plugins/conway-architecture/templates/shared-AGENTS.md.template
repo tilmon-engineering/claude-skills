@@ -1,0 +1,39 @@
+# Team roster and architecture map
+
+This file is the **architecture, in the form of the team that builds it**. Conway's Law says the system will resemble the communication structure of the people (and agents) that built it. Rather than fight that, we use it: the team here *is* the intended architecture.
+
+## Roster
+
+| Domain | Owns | Coordinator's notes |
+|---|---|---|
+| {{DOMAIN}} | `{{GLOB}}` | ... |
+
+## Routing rules
+
+How the coordinator decides who gets a task:
+
+1. The task touches files matching exactly one domain's `owned_paths` → delegate to that domain.
+2. The task touches files matching multiple domains → break the task into per-domain pieces, or update a shared contract first.
+3. The task touches no domain's `owned_paths` → either route to the closest fit, or propose a new domain (via `/conway-propose-agent`).
+4. The task is cross-cutting (e.g., contract changes) → coordinator drafts in `contracts/`, requests ack from each affected domain, then delegates implementation.
+
+## Non-overlap invariant
+
+No two domains may claim the same path. If you find yourself wanting to add overlapping `owned_paths`, that is a signal the boundary is wrong. Either:
+
+- Move the contested files into a new domain, OR
+- Move them under one of the existing domains and rename the other's scope, OR
+- Pull them into `_shared/` if they're genuinely cross-cutting interfaces.
+
+The hook will refuse to enforce ownership cleanly if overlaps exist; the coordinator's first job is to keep this invariant.
+
+## Cross-domain contracts
+
+Live in `contracts/`. Each contract names the publishing domain and lists subscribers. Changes follow the protocol above.
+
+## Coordinator boundaries
+
+The coordinator (the main session agent) does not directly edit any file matching a domain's `owned_paths`, nor anything under `.agents/<domain>/`. The hook enforces this. The coordinator may edit:
+
+- `.agents/_shared/` (this directory, plus `contracts/`, plus `ROADMAP.md`)
+- Any file not claimed by a domain (uncovered territory)

@@ -1,5 +1,31 @@
 # Changelog
 
+## conway-architecture 0.1.0
+
+First working release. Implements the Conway Architecture method: a persistent, domain-scoped subagent team whose communication boundaries become the system's architecture, enforced by a path-scoped `PreToolUse` hook. Empirically verified in v0.0.1 that hook input carries the teammate's `name` as `agent_type`, which makes path-scoped enforcement clean.
+
+**New:**
+- `conway-method` skill: vocabulary, decision table, coordinator/teammate discipline, failure modes. The headline artifact codifying the method.
+- `/conway-init` command: interview-driven team bootstrap. Writes `.agents/<domain>/AGENTS.md` charters with `owned_paths` frontmatter, plus `.agents/_shared/{AGENTS.md, ROADMAP.md, contracts/}`.
+- `/conway-session` command: materializes the team via `TeamCreate` and spawns each domain agent as a named teammate with a charter-loading prompt.
+- `enforce-ownership.py` PreToolUse hook: parses `.agents/<domain>/AGENTS.md` frontmatter, intersects requested `file_path` with every domain's `owned_paths` globs, and blocks misrouted writes. No-op in projects without `.agents/`.
+- Templates for domain AGENTS.md, shared roster, and ROADMAP — used by `/conway-init` and hand-authorable.
+
+**Changed:**
+- Removed v0.0.1 diagnostic scaffold (`/conway-probe`, stdin-dump hook). Their job — verify the hook's identity fields — is done.
+
+**Known limitations (planned for v0.2):**
+- The `conway-method` skill has not yet been pressure-tested via `writing-skills` RED-GREEN-REFACTOR with subagents.
+- `/conway-propose-agent` (growth flow) and `/conway-validate` (standalone invariant check) are not yet implemented.
+
+## conway-architecture 0.0.1
+
+Initial diagnostic scaffold. Not yet a working method plugin — the v0.0.1 release is a probe used to empirically verify what identity fields a `PreToolUse` hook receives when invoked by a named teammate spawned via `TeamCreate` + `Agent(team_name=..., name=..., ...)`. The answer determines whether path-scoped enforcement of domain ownership is feasible before the real method plugin is designed.
+
+**New:**
+- `/conway-probe` command: spawns a named teammate, has it `Write` a file, captures the hook input alongside a main-agent baseline, and reports which field a future enforcement hook should key on.
+- `PreToolUse` hook on `Write|Edit`: non-blocking stdin dump to `.conway-probe/pretooluse.jsonl`.
+
 ## semantic-db 0.1.0
 
 Initial release. A substrate skill, `using-typedb`, teaching agents to interact with TypeDB 3.x databases through the `typedb` MCP tools.
