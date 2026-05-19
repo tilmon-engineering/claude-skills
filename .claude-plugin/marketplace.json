@@ -50,7 +50,7 @@
     {
       "name": "conway-architecture",
       "description": "Inverts Conway's Law as a design tool: enforce architecture by structuring a persistent, domain-scoped subagent team whose communication boundaries become the system's boundaries. Path-scoped ownership via PreToolUse hook; coordinator delegates and never edits domain-owned files directly.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./plugins/conway-architecture",
       "author": {
         "name": "Tilmon Engineering"

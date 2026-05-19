@@ -37,7 +37,7 @@ Skip when: the project has no `.agents/` directory. The plugin is a no-op there.
 ├── _shared/
 │   ├── AGENTS.md         # roster + routing rules (coordinator-writable)
 │   ├── ROADMAP.md        # what's in flight (coordinator-writable)
-│   └── contracts/        # inter-domain interfaces (coordinator + acks)
+│   └── contracts/        # text specs of who depends on whom (coordinator + acks)
 └── <domain>/
     ├── AGENTS.md         # charter with owned_paths frontmatter
     ├── notes/            # private working memory (owner-writable)
@@ -60,6 +60,19 @@ A `PreToolUse` hook on `Write|Edit` runs `enforce-ownership.py`. The decision ta
 | Domain agent `D` | uncovered path | **deny** — claim it or route via coordinator |
 
 If `.agents/` does not exist in the project, the hook is a no-op.
+
+## What `_shared/contracts/` is (and isn't)
+
+It is **text specifications**, not source code. Each file in `_shared/contracts/` describes a single inter-domain interface in prose plus whatever schema-like notation is useful (markdown, with embedded protobuf/typescript/OpenAPI fragments if helpful for clarity). A contract names:
+
+- **Producer**: which domain publishes this interface.
+- **Consumers**: which domains depend on it.
+- **Shape**: what the interface promises — fields, semantics, invariants, error modes.
+- **Change protocol**: how this contract evolves (typically: producer drafts, every consumer acks in their own `decisions/`).
+
+It is **not** a place for shared code. The producing domain implements the contract inside its own `owned_paths`. Consumers implement their integration inside *their* own `owned_paths`. If two domains find themselves wanting to import the same module, that is a signal the boundary is wrong — promote the module's owner to a real domain, don't smuggle code through `_shared/`.
+
+The point of the directory is the **dependency graph in textual form**: anyone can read `_shared/contracts/` and answer "who relies on whom, and for what?" without grepping code.
 
 ## Coordinator discipline
 

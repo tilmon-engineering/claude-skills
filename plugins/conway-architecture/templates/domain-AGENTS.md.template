@@ -29,13 +29,13 @@ Adjacent territory that someone else owns. Naming it here makes the boundary exp
 
 ## Contracts I rely on
 
-Interfaces I depend on, declared in `.agents/_shared/contracts/`. If one of these changes, I need to know.
+Interfaces I depend on. Each is a text spec in `.agents/_shared/contracts/`; the producing domain implements it inside *their* code, and I implement my integration inside *mine*. If a spec here changes, I need to know.
 
 - ...
 
 ## Contracts I expose
 
-Interfaces other domains rely on me providing. I do not change these without coordinating; changes get drafted in `.agents/_shared/contracts/` and acked by every downstream domain.
+Interfaces other domains rely on me providing. The spec lives in `.agents/_shared/contracts/` — I do not change it without drafting the new version there and getting an ack from every consumer in their `decisions/`. The implementation lives in my `owned_paths`; nothing about my interface is in `_shared/` except the specification.
 
 - ...
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## conway-architecture 0.1.1
+
+Clarifies what `.agents/_shared/contracts/` is. The directory holds **text specifications** describing inter-domain interfaces — producer, consumers, shape, change protocol — not source code. Each domain implements its side of a contract inside its own `owned_paths`. The directory's purpose is to expose the dependency graph in human-readable form, not to share code across domains.
+
+**Changed:**
+- `conway-method` skill: new "What `_shared/contracts/` is (and isn't)" section; updated file-tree comment.
+- `templates/shared-AGENTS.md.template`: rewrote "Cross-domain contracts" section accordingly.
+- `templates/domain-AGENTS.md.template`: tightened "Contracts I rely on" / "Contracts I expose" to clarify spec lives in `_shared/`, implementation lives in `owned_paths`.
+- `README.md`: one-line clarification on `_shared/contracts/`.
+
 ## conway-architecture 0.1.0
 
 First working release. Implements the Conway Architecture method: a persistent, domain-scoped subagent team whose communication boundaries become the system's architecture, enforced by a path-scoped `PreToolUse` hook. Empirically verified in v0.0.1 that hook input carries the teammate's `name` as `agent_type`, which makes path-scoped enforcement clean.

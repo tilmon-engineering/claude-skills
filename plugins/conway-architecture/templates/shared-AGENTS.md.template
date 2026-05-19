@@ -29,7 +29,11 @@ The hook will refuse to enforce ownership cleanly if overlaps exist; the coordin
 
 ## Cross-domain contracts
 
-Live in `contracts/`. Each contract names the publishing domain and lists subscribers. Changes follow the protocol above.
+`contracts/` holds **text specifications**, not source code. Each file describes one inter-domain interface: which domain produces it, which consume it, what shape it promises, and how it evolves.
+
+The implementations live inside each domain's own `owned_paths`. The producing domain implements the interface there; each consumer implements its integration there. `contracts/` is the human-readable record of *who depends on whom* — the dependency graph in textual form, not a shared code area.
+
+If two domains want to import the same module, the boundary is wrong. Promote the module's owner to a real domain rather than smuggling code through `_shared/`.
 
 ## Coordinator boundaries
 

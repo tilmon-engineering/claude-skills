@@ -26,7 +26,7 @@ The plugin is a no-op in projects without a `.agents/` directory, so you can hav
 - **`.agents/<domain>/notes/`, `decisions/`** — per-domain working memory and durable decisions. Owner-writable; peer-readable.
 - **`.agents/_shared/AGENTS.md`** — the roster and routing rules. Coordinator-owned.
 - **`.agents/_shared/ROADMAP.md`** — what's in flight. Coordinator-owned.
-- **`.agents/_shared/contracts/`** — inter-domain interfaces. Coordinator drafts; downstream domains ack.
+- **`.agents/_shared/contracts/`** — text specs of inter-domain interfaces (producer + consumers + shape + change protocol). The dependency graph in prose, not a shared code area; implementations live in each domain's own `owned_paths`.
 
 ## How enforcement works
 
