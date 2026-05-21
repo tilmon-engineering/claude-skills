@@ -1,5 +1,27 @@
 # Changelog
 
+## conway-architecture 0.2.0
+
+Adds the **quality agent** as a recommended pattern: a dedicated domain teammate that owns the integration/e2e test surface, runs workspace-mutating commands the dev team can't safely run in parallel, and brings an outsider's perspective on legibility, error messages, and onboarding friction. Codifies a **round-then-assess** rhythm — the coordinator delegates a development round in parallel, lets the dev team settle into a coherent state, then hands control to the quality agent for assessment, with no interleaving.
+
+**New:**
+- `conway-method` skill: new "The quality agent (recommended pattern)" section covering role, round-then-assess rhythm, tool belt, outsider's posture, and when-to-add criteria.
+- `conway-method` skill: workspace-mutating commands now explicitly claimed as the quality agent's territory (coordinator as fallback), off-limits to dev-team teammates.
+- `conway-method` skill: coordinator discipline now includes "fan out when domains are independent" and "round, then assess" as numbered rules.
+- `conway-method` skill: three new failure-mode entries covering workspace-collision attribution, serial-by-default coordination, and mid-round quality runs.
+- `/conway-init`: interview step 4 prompts the user to opt into a quality agent with default `owned_paths` proposed from repo structure (`tests/integration/**`, `tests/e2e/**`, `playwright/**`, etc.).
+
+**Changed:**
+- "Reentrant vs workspace-mutating actions" renamed to "Parallelism and workspace-mutating actions" — leads with the parallelism invariant that makes the rest of the contract necessary.
+
+## conway-architecture 0.1.2
+
+Removes the `model: sonnet` pin from `/conway-init` and `/conway-session` commands. The pin was causing 1M-context dispatch failures for users running the commands from a 1M-context session, because session capability flags appear to propagate to pinned model invocations (`sonnet` got invoked as `sonnet[1m]`, which requires usage credits). Commands now inherit the session's model.
+
+**Changed:**
+- `commands/conway-init.md`: dropped `model: sonnet` frontmatter field.
+- `commands/conway-session.md`: dropped `model: sonnet` frontmatter field.
+
 ## conway-architecture 0.1.1
 
 Clarifies what `.agents/_shared/contracts/` is. The directory holds **text specifications** describing inter-domain interfaces — producer, consumers, shape, change protocol — not source code. Each domain implements its side of a contract inside its own `owned_paths`. The directory's purpose is to expose the dependency graph in human-readable form, not to share code across domains.

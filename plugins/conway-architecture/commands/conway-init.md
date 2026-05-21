@@ -1,7 +1,6 @@
 ---
 description: Bootstrap a Conway Architecture team for this project - interview the user about domains, generate .agents/<name>/AGENTS.md charters with owned_paths, validate non-overlap, and write the shared roster
 allowed-tools: Read, Write, Edit, Bash, AskUserQuestion, Glob, Grep
-model: sonnet
 ---
 
 # Conway Architecture: initialize team
@@ -25,6 +24,7 @@ Use `AskUserQuestion` to elicit the team. **Ask, don't guess.** The user is the 
 1. "What are the major domains in this project?" — multi-select with the directory-derived suggestions + "Other".
 2. For each domain in turn: "What paths does the `<domain>` agent own?" — propose globs from the repo structure; let the user accept, edit, or override.
 3. "Are any of the proposed domains overlapping in ownership?" — if any path appears in two domains' globs, surface it and force a decision (move to one, move to `_shared/`, or rename the boundary). The hook will refuse to enforce overlapping ownership.
+4. "Do you want a **quality agent**? (recommended)" — see the `Quality agent (recommended pattern)` section of the `conway-method` skill. A quality agent owns the integration/e2e test surface, runs workspace-mutating checks the dev team can't safely run in parallel, and brings an outsider's perspective on legibility, error messages, and onboarding friction. Propose default `owned_paths` from what you observed in the repo — typically `tests/integration/**`, `tests/e2e/**`, `playwright/**`, `tests/smoke/**`, `tests/fixtures/**`. Let the user accept, edit, or decline. If declined, mention that the coordinator inherits the workspace-mutating burden by default.
 
 If the user pushes back on a suggestion ("that's not really a domain, it's just a folder"), update — don't dig in. The goal is *their* mental model, not yours.
 

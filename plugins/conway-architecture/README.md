@@ -28,6 +28,17 @@ The plugin is a no-op in projects without a `.agents/` directory, so you can hav
 - **`.agents/_shared/ROADMAP.md`** — what's in flight. Coordinator-owned.
 - **`.agents/_shared/contracts/`** — text specs of inter-domain interfaces (producer + consumers + shape + change protocol). The dependency graph in prose, not a shared code area; implementations live in each domain's own `owned_paths`.
 
+## The quality agent (recommended)
+
+For any project past trivial size, `/conway-init` will offer to create a **quality agent** alongside the dev-team domains. It's a regular domain teammate with a distinguishing charter:
+
+- **Owns the integration / e2e test surface** (`tests/integration/**`, `tests/e2e/**`, `playwright/**`, smoke scripts, fixtures). Dev-team domains cannot edit these.
+- **Owns workspace-mutating commands exclusively.** Integration suites, mutation testing, full-stack dev servers, browser automation — anything that touches global workspace state — runs only under the quality agent (or the coordinator as fallback). Dev-team teammates run scope-local checks only; the disjoint-ownership invariant is what makes parallel dev-team work safe, and that invariant breaks the moment a teammate boots a server or rebuilds the whole target dir.
+- **Runs on a round-then-assess rhythm.** The coordinator delegates a *development round* to the dev team in parallel; once that round settles into a coherent state, control hands to the quality agent for assessment. Dev edits and quality runs do not interleave.
+- **Brings an outsider's perspective.** Domain agents rehydrate from their own notes and know why every choice was made; the quality agent doesn't. That gap is the feature — it's the right vantage point to ask "is this legible to a newcomer? do the error messages tell the user what went wrong and what to do next? does the system match a reasonable user's expectations?" Findings come back as prose in `.agents/quality/decisions/`, not as test failures.
+
+See the `Quality agent (recommended pattern)` section of the `conway-method` skill for full details.
+
 ## How enforcement works
 
 A `PreToolUse` hook on `Write|Edit` reads stdin, identifies the caller (coordinator vs. teammate by the presence of the `agent_type` field), and matches the requested `file_path` against every domain's `owned_paths`. Decisions:

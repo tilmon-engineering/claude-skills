@@ -80,9 +80,11 @@ When you are the main session agent in a Conway project, your operating posture 
 
 1. **Read `.agents/_shared/AGENTS.md` first.** It is your charter.
 2. **Delegate, don't do.** If a task touches a domain's owned paths, you send the teammate a message. You do not pick up the file yourself, even if "it would be faster."
-3. **Update the roadmap, not the code.** Your editable surface is `_shared/` and uncovered files.
-4. **Boundary smells.** If a task keeps bouncing between two domains, the boundary is probably wrong. Surface it; consider `/conway-propose-agent` or moving the boundary. Do not paper over it by doing the work yourself — that is the failure mode this method exists to prevent.
-5. **End-of-session hygiene.** Ask each active teammate to drop a note in `.agents/<name>/notes/<date>.md`. That note *is* the next session's memory of them.
+3. **Fan out when domains are independent.** Spawn dev-team teammates in parallel whenever the work doesn't have a cross-domain dependency. Serialize only when one domain genuinely needs another's output first. The disjoint-ownership invariant is what makes parallel work safe — use it.
+4. **Round, then assess.** If a quality agent exists, run development in *rounds*: delegate, let the dev team settle into a coherent state, then hand control to the quality agent for assessment. Do not interleave dev edits and quality runs. See the quality-agent section.
+5. **Update the roadmap, not the code.** Your editable surface is `_shared/` and uncovered files.
+6. **Boundary smells.** If a task keeps bouncing between two domains, the boundary is probably wrong. Surface it; consider `/conway-propose-agent` or moving the boundary. Do not paper over it by doing the work yourself — that is the failure mode this method exists to prevent.
+7. **End-of-session hygiene.** Ask each active teammate to drop a note in `.agents/<name>/notes/<date>.md`. That note *is* the next session's memory of them.
 
 ## Domain agent discipline
 
@@ -101,9 +103,11 @@ Then, while working:
 - If the coordinator routes you a task that crosses into another domain, push back. The right move is for the coordinator to break the task up or update a shared contract.
 - Write notes as you go. You will not exist next session; future-you depends on what you leave behind in `notes/` and `decisions/`.
 
-## Reentrant vs workspace-mutating actions
+## Parallelism and workspace-mutating actions
 
-Conway's boundary applies to **runtime side effects**, not just file writes. The same logic that keeps two agents from editing the same file keeps them from stepping on each other's build artifacts, server ports, browser instances, or mutation-test scratch checkouts. The contract:
+**The dev team runs in parallel.** A coordinator that delegates serially is leaving most of Conway's value on the table. The point of disjoint `owned_paths` is precisely that two domain teammates editing their own files cannot collide — so the coordinator should fan out work whenever the domains involved are independent, and only serialize when there's a genuine inter-domain dependency.
+
+Parallelism only works if no teammate touches **shared workspace state**. Conway's boundary therefore applies to **runtime side effects**, not just file writes. The same logic that keeps two agents from editing the same file keeps them from stepping on each other's build artifacts, server ports, browser instances, or mutation-test scratch checkouts. The contract:
 
 **Teammates may run reentrant, scope-local actions freely.** These are safe because two domains doing them in parallel cannot collide:
 
@@ -112,7 +116,7 @@ Conway's boundary applies to **runtime side effects**, not just file writes. The
 - `cargo check` / type-checks limited to the teammate's crate.
 - Reading anything: `cat`, `grep`, `git log`, `git diff`, `git status`.
 
-**Teammates do not run workspace-mutating or exclusive-resource actions.** These either touch shared global state (the whole target dir, a port, a database, a browser) or take long enough that two parallel runs would interfere. Examples:
+**Teammates do not run workspace-mutating or exclusive-resource actions.** These are the **exclusive territory of the quality agent (preferred) or the coordinator** — never a dev-team teammate. They either touch shared global state (the whole target dir, a port, a database, a browser) or take long enough that two parallel runs would interfere. Examples:
 
 - Full workspace builds (`just build`, `cargo build --workspace`, `bazel build //...`).
 - Integration / end-to-end test suites (`just test`, `just test-integration`, Playwright/Cypress, anything that boots a server or fixture DB).
@@ -130,6 +134,58 @@ The coordinator then runs (or chooses not to run) the workspace-mutating checks 
 
 **Why this matters.** Without this rule, two teammates running `just build` in parallel will fight over `target/`, two `dx serve` invocations will fight over the same port, and `cargo-mutants` runs will silently corrupt each other's scratch directories. The hook does not enforce this — it is a discipline that lives in each domain's charter. State it explicitly in the "Conventions" section of `AGENTS.md` for any domain whose work could plausibly tempt it across the line.
 
+**Who runs the workspace-mutating tier?** Either the coordinator, or — preferred for any project past trivial size — a dedicated **quality agent**. See the next section.
+
+## The quality agent (recommended pattern)
+
+The reentrant-vs-mutating rule leaves an open question: if domain teammates only run scope-local checks, who runs the integration suite, the end-to-end tests, the manual smoke checks? One answer is "the coordinator." The better answer, for any project past trivial size, is a dedicated **quality agent**.
+
+### Role
+
+The quality agent is a regular domain teammate — it has `owned_paths`, it rehydrates from `.agents/quality/`, it lives or dies by the same hook — with one distinguishing charter:
+
+- It owns the **integration and end-to-end test surface** (typical paths: `tests/integration/**`, `tests/e2e/**`, `playwright/**`, fixture setup scripts, smoke-test scripts).
+- It owns **quality reports and findings** under its own `decisions/` and `notes/`.
+- It does **not** own application code. It cannot fix what it finds — it reports back to the coordinator, who routes fixes to the implicated domain.
+
+### The round-then-assess rhythm
+
+The coordinator's loop becomes two-phase:
+
+1. **Development round.** Coordinator delegates work to one or more domain teammates. Teammates implement, run scope-local checks, signal complete. Coordinator may iterate within this phase.
+2. **Quality assessment.** Once the development round has settled into a *coherent, complete-to-the-best-of-everyone's-ability* state, coordinator hands control to the quality agent. Quality runs whatever it considers appropriate: integration tests, end-to-end suites, manual exploration with `curl` or Playwright, log inspection, DB inspection against fixtures.
+
+The two phases do not interleave. The quality agent does not run mid-round; the dev team does not patch mid-assessment. If quality finds something, it reports — and the coordinator either opens a new development round or accepts the finding.
+
+### Tooling
+
+The quality agent's tool belt is whatever the application demands:
+
+- Integration test runners (`pytest tests/integration`, `cargo test --test`, `vitest run`, `playwright test`).
+- Manual probes: `curl`, `httpie`, browser automation, log tailing, DB queries against a test fixture.
+- Static analysis at the system level: dead-code detection, dependency audits, schema diffs.
+
+**Workspace-mutating commands belong here, exclusively.** Full-workspace builds, integration suites, mutation testing, dev servers, browser automation, and any other command that touches shared global state are off-limits to dev-team teammates (which run in parallel and would collide) and belong to the quality agent. The coordinator is the fallback if no quality agent exists; the dev team never runs them. The quality agent boots the full stack, drives it, tears it down — serialized by charter, not by luck.
+
+### The outsider's posture
+
+The other half of the quality agent's job is **qualitative assessment from outside any domain's mental model**. Domain agents rehydrate from their own notes and decisions — they know why every choice was made and what every cryptic variable means. The quality agent does not. That gap is the feature, not a bug.
+
+Questions the quality agent should hold open every assessment:
+
+- **Legibility.** Reading the code or output cold, can a newcomer follow what's happening? Are names doing real work?
+- **Error messages.** When something goes wrong, does the message describe *what* failed, *why*, and *what the user should do next*? Or is it a stack trace and a prayer?
+- **System sense-making.** Does the overall behavior match a user's reasonable expectation? Are there silent failures? Surprising successes?
+- **Onboarding friction.** If a new developer (or user) sat down to use this today, where would they get stuck?
+
+Findings here come back as prose in `.agents/quality/decisions/<date>-assessment.md`, not as test failures. The coordinator decides what to act on.
+
+### When to add one
+
+- Strongly recommended for any multi-domain project that has, or will have, integration tests.
+- Strongly recommended for any user-facing system (CLI, web app, API) where "does the experience make sense to someone new?" is a real question.
+- Skippable for tiny single-domain projects or pure libraries with strong unit-test coverage and no user-facing surface — though even there, the outsider's-perspective half can be useful.
+
 ## Failure modes (and how to spot them)
 
 | Symptom | Likely cause | Fix |
@@ -139,7 +195,9 @@ The coordinator then runs (or chooses not to run) the workspace-mutating checks 
 | Teammate hits a denial citing "no owner" | New territory has no domain | Coordinator either claims it under an existing domain or proposes a new one |
 | Two domains constantly need to update each other's contracts | The interface lives in the wrong place | Promote the contract to `_shared/contracts/`, gate changes on multi-domain ack |
 | Notes never get written | End-of-session hygiene skipped | Add to coordinator's end-of-turn checklist; without notes, every session starts blind |
-| Two teammates' builds / dev servers / mutation runs collide | Workspace-mutating action was run by a teammate instead of the coordinator | Reaffirm the reentrant-vs-mutating contract; teammate runs only scope-local checks and signals status back |
+| Two teammates' builds / dev servers / mutation runs collide | Workspace-mutating action was run by a dev-team teammate | Reaffirm the contract: workspace-mutating runs belong to the quality agent (or coordinator). Dev team runs only scope-local checks and signals status back |
+| Coordinator always delegates serially, one teammate at a time | Forgetting that disjoint ownership makes parallel work safe | Spawn independent domains in parallel; serialize only on real cross-domain dependencies |
+| Quality agent runs mid-development-round and reports churn | Round-then-assess rhythm not respected | Let the dev round settle to a coherent state before invoking quality; don't interleave |
 
 ## Hook input shape (for reference)
 

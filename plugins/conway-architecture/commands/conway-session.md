@@ -1,7 +1,6 @@
 ---
 description: Materialize the Conway team for this session - read .agents/, create a TeamCreate, spawn each domain agent as a named teammate with a charter-loading prompt, surface the roster
 allowed-tools: Read, Bash, Glob, TeamCreate, Agent, SendMessage
-model: sonnet
 ---
 
 # Conway Architecture: start session
