@@ -1,5 +1,12 @@
 # Changelog
 
+## conway-architecture 0.2.1
+
+Fixes a PreToolUse hook validation error that fired on every `Write`/`Edit` in projects using this plugin. Claude Code's hook schema requires `hookSpecificOutput.hookEventName` alongside `permissionDecision`; the field was missing, so the harness rejected the hook's JSON output ("Hook JSON output validation failed — hookSpecificOutput is missing required field 'hookEventName'") instead of applying the ownership decision.
+
+**Fixed:**
+- `hooks/enforce-ownership.py`: emit `hookEventName: "PreToolUse"` inside `hookSpecificOutput` on every code path (allow, deny, and malformed-input fallback).
+
 ## conway-architecture 0.2.0
 
 Adds the **quality agent** as a recommended pattern: a dedicated domain teammate that owns the integration/e2e test surface, runs workspace-mutating commands the dev team can't safely run in parallel, and brings an outsider's perspective on legibility, error messages, and onboarding friction. Codifies a **round-then-assess** rhythm — the coordinator delegates a development round in parallel, lets the dev team settle into a coherent state, then hands control to the quality agent for assessment, with no interleaving.

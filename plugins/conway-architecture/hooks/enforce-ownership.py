@@ -206,10 +206,12 @@ def main() -> int:
         payload = json.load(sys.stdin)
     except json.JSONDecodeError:
         # Don't block on malformed input; let Claude proceed.
-        print(json.dumps({"hookSpecificOutput": {"permissionDecision": "allow"}}))
+        print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "allow"}}))
         return 0
 
     result = decide(payload)
+    hso = result.setdefault("hookSpecificOutput", {})
+    hso["hookEventName"] = "PreToolUse"
     print(json.dumps(result))
     return 0
 
